@@ -14,15 +14,20 @@ module.exports = {
         
         for(var roomName in Game.rooms)
         {
+		
             var room = Game.rooms[roomName];
             var targets = room.find(FIND_CONSTRUCTION_SITES);
             
             if(!targets.length)
             {
+			
                 var nextStructure = this.getNextStructure(room);
+				
                 if(nextStructure !== null)
                 {
+				
                     var position = this.getPositionForStructure(nextStructure, room);
+					
                     if(position !== null)
                     {
                         console.log("Creating building : " + nextStructure + " ("+position.x+"-"+position.y+")");
@@ -95,12 +100,14 @@ module.exports = {
     {
         if(struct == STRUCTURE_EXTENSION)
         {
+		
             var pos = Game.spawns.Spawn1.pos;
-            var result = room.lookAtArea(pos.y + 2, pos.x - 2, 49 - pos.y, pos.x + 2, false);
+			
+            var result = room.lookAtArea(pos.y + 2, pos.x - 2, 49, pos.x + 2, false);
             
             var skipX = false;
             var skipY = false;
-            
+			
             for(var yPos in result)
             {
                 if(skipY)
