@@ -1,11 +1,11 @@
 /*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('building');
- * mod.thing == 'a thing'; // true
- */
+* Module code goes here. Use 'module.exports' to export things:
+* module.exports.thing = 'a thing';
+*
+* You can import it from another modules like this:
+* var mod = require('building');
+* mod.thing == 'a thing'; // true
+*/
 
 module.exports = {
 
@@ -14,8 +14,8 @@ module.exports = {
 
         for(var roomName in Game.rooms)
         {
+
             var room = Game.rooms[roomName];
-            
             var targets = room.find(FIND_CONSTRUCTION_SITES);
 
             if(!targets.length)
@@ -52,7 +52,7 @@ module.exports = {
             var count = this.countExistingStructures(struct, room);
 
             if(count < max)
-                return struct;
+            return struct;
         }
 
         return null;
@@ -73,24 +73,24 @@ module.exports = {
         if(struct == STRUCTURE_EXTENSION)
         {
             if(level < 2)
-                return 0;
+            return 0;
             else if(level == 2)
-                return 5;
+            return 5;
             else return 10 * (level - 2);
         }
 
         if(struct == STRUCTURE_TOWER)
         {
             if(level < 3)
-                return 0;
+            return 0;
             else if(level < 5)
-                return 1;
+            return 1;
             else if(level < 7)
-                return 2;
+            return 2;
             else if(level < 8)
-                return 3;
+            return 3;
             else
-                return 6;
+            return 6;
         }
 
         return 0;
