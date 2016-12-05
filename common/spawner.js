@@ -37,22 +37,25 @@ module.exports = {
 
     spawnIfNecessary()
     {
-        var spawn = Game.spawns.Spawn1;
-        
-        if(spawn.spawning == null) 
+        for(var spawnName in Game.spawns)
         {
-            if(Memory.spawnQueue.length > 0)
+            var spawn = Game.spawns[spawnName];
+            
+            if(spawn.spawning == null) 
             {
-                var nextCreepRole = Memory.spawnQueue[0];
-                
-                if(spawn.canCreateCreep(this.getParts(nextCreepRole)) === 0)
+                if(Memory.spawnQueue.length > 0)
                 {
-                    var result = spawn.createCreep([WORK, CARRY, MOVE], nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
+                    var nextCreepRole = Memory.spawnQueue[0];
                     
-                    console.log("Creating new creep : " + nextCreepRole);
-                    
-                    Memory.spawnQueue.shift();
-                    Memory.CreepCount += 1;
+                    if(spawn.canCreateCreep(this.getParts(nextCreepRole)) === 0)
+                    {
+                        var result = spawn.createCreep([WORK, CARRY, MOVE], nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
+                        
+                        console.log("Creating new creep : " + nextCreepRole);
+                        
+                        Memory.spawnQueue.shift();
+                        Memory.CreepCount += 1;
+                    }
                 }
             }
         }
