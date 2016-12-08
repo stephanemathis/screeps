@@ -40,7 +40,9 @@ module.exports = {
                     var nextCreepRole = Memory.spawnQueue[0];
                     var parts = this.getParts(nextCreepRole, spawn);
 
-                    if(spawn.canCreateCreep(parts) === 0)
+var spawnReslt = spawn.canCreateCreep(parts);
+console.log("try to spawn" + parts.length + "/" + spawnReslt);
+                    if(spawnReslt === 0)
                     {
                         var result = spawn.createCreep(parts, nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
 
@@ -56,41 +58,44 @@ module.exports = {
 
     getParts(role, spawn)
     {
-        return [WORK, CARRY, MOVE];
-        // var maxEnergy = spawn.room.energyAvailable;
-        //
-        // // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
-        // var idealParts = {
-        //     "harvester": [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
-        //     "builder": [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
-        //     "upgrader" : [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
-        //     //"miner" : [WORK, WORK, MOVE, WORK],
-        //     //"transporter": [CARRY, CARRY, MOVE, MOVE],
-        // };
-        //
-        // var availableParts = idealParts[role];
-        // var parts = [];
-        // var hasEnoughenergy = true;
-        // var index = 0;
-        // var totalEnergy = 0;
-        //
-        // while(hasEnoughenergy)
-        // {
-        //     var nextPart = availableParts[index];
-        //     console.log(nextPart);
-        //     var cost = this.getPartCost(nextPart);
-        //     if(cost + totalEnergy < maxEnergy)
-        //     {
-        //         parts.push(nextPart);
-        //         index++;
-        //     }
-        //     else
-        //     {
-        //         hasEnoughenergy = false;
-        //     }
-        // }
-        //
-        // return parts;
+        var maxEnergy = 300 + require("building").countExistingStructures(STRUCTURE_EXTENSION, spawn.room) * 50;
+
+        // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
+        var idealParts = {
+            "harvester": [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
+            "builder": [WORK, CARRY, MOVE, WORK, CARRY, WORK, CARRY, MOVE],
+            "upgrader" : [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
+            //"miner" : [WORK, WORK, MOVE, WORK],
+            //"transporter": [CARRY, CARRY, MOVE, MOVE],
+        };
+
+        var availableParts = idealParts[role];
+        var parts = [];
+        var hasEnoughenergy = true;
+        var index = 0;
+        var totalEnergy = 0;
+
+        while(hasEnoughenergy)
+        {
+            var nextPart = availableParts[index % availableParts.length];
+
+            var cost = this.getPartCost(nextPart);
+
+            var totalCost = cost + totalEnergy;
+
+            if(totalCost > maxEnergy)
+            {
+                hasEnoughenergy = false;
+            }
+            else
+            {
+                parts.push(nextPart);
+                totalEnergy += cost;
+                index = index + 1;
+            }
+        }
+
+        return parts;
     },
 
     getPartCost(part)
@@ -98,11 +103,12 @@ module.exports = {
         var bodyCost = {
           "move": 50,
           "carry": 50,
-          "work": 20,
-          "heal": 200,
-          "tough": 20,
+          "work": 100,
+          "heal": 250,
+          "tough": 10,
           "attack": 80,
-          "ranged_attack": 150
+          "ranged_attack": 150,
+          "claim": 600
         };
 
         return bodyCost[part];
