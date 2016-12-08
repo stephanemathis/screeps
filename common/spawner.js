@@ -63,8 +63,8 @@ console.log("try to spawn" + parts.length + "/" + spawnReslt);
         // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
             "harvester": [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
-            "builder": [WORK, CARRY, MOVE, WORK, CARRY, WORK, CARRY, MOVE],
-            "upgrader" : [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
+            "builder": [CARRY, WORK, MOVE, CARRY, CARRY, MOVE, WORK],
+            "upgrader" : [CARRY, WORK, MOVE, CARRY, CARRY, MOVE, WORK],
             //"miner" : [WORK, WORK, MOVE, WORK],
             //"transporter": [CARRY, CARRY, MOVE, MOVE],
         };
