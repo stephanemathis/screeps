@@ -46,7 +46,7 @@ function OnControllerLevelChanged(newLevel)
 
     if(newLevel == 2)
     {
-        spawner.addToSpawnQueue(["upgrader"]);
+        spawner.addToSpawnQueue(["upgrader", "citizen", "citizen", "citizen"]);
     }
 }
 
