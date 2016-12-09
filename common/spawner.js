@@ -65,7 +65,7 @@ module.exports = {
         // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
             "upgrader" : [CARRY, WORK, MOVE, CARRY, CARRY, MOVE, WORK],
-            "citizen" : [WORK, MOVE, CARRY, WORK, MOVE, CARRY],
+            "citizen" : [WORK, MOVE, CARRY, CARRY, MOVE, WORK],
             "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK]
         };
 

@@ -70,5 +70,6 @@ function Init()
         Memory.IsInitialized = true;
 
         Memory.ControllerLevel = GetControllerLevel();
+        Memory.CreepCount = 0;
     }
 }
