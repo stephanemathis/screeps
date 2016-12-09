@@ -13,7 +13,7 @@ module.exports.loop = function () {
 
     var controllerLevel = GetControllerLevel();
     if(controllerLevel != Memory.ControllerLevel)
-    OnControllerLevelChanged(controllerLevel);
+        OnControllerLevelChanged(controllerLevel);
 
     spawner.init();
     spawner.respawnDeadCreeps();
@@ -67,22 +67,8 @@ function Init()
 {
     if(!Memory.IsInitialized)
     {
-        console.log("Init done");
         Memory.IsInitialized = true;
 
-        Memory.CreepCount = 0;
         Memory.ControllerLevel = GetControllerLevel();
     }
 }
-
-/** @param {string} text **/
-function Log(text) {
-    console.log(text);
-}
-
-
-
-/*
-Avoir des move et carry rapidement
-et 2 qui move et work work au debut
-*/
