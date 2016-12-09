@@ -42,7 +42,7 @@ module.exports = {
     {
         var controllerLevel = room.controller.level;
 
-        var structPriority = [STRUCTURE_EXTENSION, STRUCTURE_TOWER];
+        var structPriority = [STRUCTURE_TOWER, STRUCTURE_EXTENSION];
 
         for(var i = 0 ; i < structPriority.length; i++)
         {
@@ -110,26 +110,19 @@ module.exports = {
 
             for(var yPos in result)
             {
-                if(skipY)
+                for(var xPos in result[yPos])
                 {
-                    skipY = false;
-                }
-                else {
-                    skipY = true;
-                    for(var xPos in result[yPos])
+                    if(skipX)
                     {
-                        if(skipX)
-                        {
-                            skipX = false;
-                        }
-                        else {
-                            skipX = true;
-                            var objectsOnPosition = result[yPos][xPos];
+                        skipX = false;
+                    }
+                    else {
+                        skipX = true;
+                        var objectsOnPosition = result[yPos][xPos];
 
-                            if(objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall")
-                            {
-                                return new RoomPosition(xPos, yPos, room.name);
-                            }
+                        if(objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall")
+                        {
+                            return new RoomPosition(xPos, yPos, room.name);
                         }
                     }
                 }

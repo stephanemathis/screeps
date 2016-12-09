@@ -1,10 +1,12 @@
+var building = require("building");
+
 module.exports = {
 
     init()
     {
         if(Memory.spawnQueue === undefined)
         {
-            Memory.spawnQueue = ["harvester", "harvester", "upgrader", "upgrader", "upgrader"];
+            Memory.spawnQueue = ["citizen", "miner", "miner", "citizen", "citizen", "citizen"];
         }
     },
 
@@ -40,8 +42,8 @@ module.exports = {
                     var nextCreepRole = Memory.spawnQueue[0];
                     var parts = this.getParts(nextCreepRole, spawn);
 
-var spawnReslt = spawn.canCreateCreep(parts);
-console.log("try to spawn" + parts.length + "/" + spawnReslt);
+                    var spawnReslt = spawn.canCreateCreep(parts);
+
                     if(spawnReslt === 0)
                     {
                         var result = spawn.createCreep(parts, nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
@@ -58,15 +60,13 @@ console.log("try to spawn" + parts.length + "/" + spawnReslt);
 
     getParts(role, spawn)
     {
-        var maxEnergy = 300 + require("building").countExistingStructures(STRUCTURE_EXTENSION, spawn.room) * 50;
+        var maxEnergy = 300 + building.countExistingStructures(STRUCTURE_EXTENSION, spawn.room) * 50;
 
         // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
-            "harvester": [WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, WORK, MOVE],
-            "builder": [CARRY, WORK, MOVE, CARRY, CARRY, MOVE, WORK],
             "upgrader" : [CARRY, WORK, MOVE, CARRY, CARRY, MOVE, WORK],
-            //"miner" : [WORK, WORK, MOVE, WORK],
-            //"transporter": [CARRY, CARRY, MOVE, MOVE],
+            "citizen" : [WORK, MOVE, CARRY, WORK, MOVE, CARRY],
+            "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK]
         };
 
         var availableParts = idealParts[role];

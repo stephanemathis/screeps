@@ -1,6 +1,8 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleCitizen = require('role.citizen');
+var roleMiner = require('role.miner');
 var _ = require('lodash');
 var spawner = require("spawner");
 var building = require("building");
@@ -23,14 +25,15 @@ module.exports.loop = function () {
 
         var creep = Game.creeps[name];
 
-        if(creep.memory.role == 'harvester')
-        roleHarvester.run(creep);
-
         if(creep.memory.role == 'upgrader')
         roleUpgrader.run(creep);
 
-        if(creep.memory.role == 'builder')
-        roleBuilder.run(creep);
+        if(creep.memory.role == 'citizen')
+        roleCitizen.run(creep);
+
+        if(creep.memory.role == 'miner')
+        roleMiner.run(creep);
+
     }
 }
 
@@ -43,7 +46,7 @@ function OnControllerLevelChanged(newLevel)
 
     if(newLevel == 2)
     {
-        spawner.addToSpawnQueue(["builder", "builder", "builder", "builder", "upgrader", "upgrader"]);
+        spawner.addToSpawnQueue(["upgrader"]);
     }
 }
 
