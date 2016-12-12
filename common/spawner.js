@@ -2,11 +2,23 @@ var building = require("building");
 
 module.exports = {
 
+    tick()
+    {
+        this.init();
+        this.respawnDeadCreeps();
+        this.spawnIfNecessary();
+    },
+
     init()
     {
         if(Memory.spawnQueue === undefined)
         {
             Memory.spawnQueue = ["citizen", "miner", "miner", "citizen", "citizen", "citizen"];
+        }
+
+        if(Memory.CreepCount === undefined)
+        {
+            Memory.CreepCount = 0;
         }
     },
 
