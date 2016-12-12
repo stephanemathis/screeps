@@ -1,11 +1,10 @@
-var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
 var roleCitizen = require('role.citizen');
 var roleMiner = require('role.miner');
 var _ = require('lodash');
 var spawner = require("spawner");
 var building = require("building");
+var defender = require("defender");
 
 module.exports.loop = function () {
 
@@ -20,6 +19,8 @@ module.exports.loop = function () {
     spawner.spawnIfNecessary();
 
     building.createBuildingIfNecessary();
+
+    defender.run();
 
     for(var name in Game.creeps) {
 
