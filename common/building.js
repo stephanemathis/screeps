@@ -1,6 +1,6 @@
 module.exports = {
 
-    tick()
+    tick() 
     {
         this.createBuildingIfNecessary();
     },
@@ -10,18 +10,15 @@ module.exports = {
 
         for(var roomName in Game.rooms)
         {
-
             var room = Game.rooms[roomName];
             var targets = room.find(FIND_CONSTRUCTION_SITES);
 
             if(!targets.length)
             {
-
                 var nextStructure = this.getNextStructure(room);
 
                 if(nextStructure !== null)
                 {
-
                     var position = this.getPositionForStructure(nextStructure, room);
 
                     if(position !== null)
@@ -48,7 +45,7 @@ module.exports = {
             var count = this.countExistingStructures(struct, room);
 
             if(count < max)
-            return struct;
+                return struct;
         }
 
         return null;
@@ -94,52 +91,63 @@ module.exports = {
 
     getPositionForStructure(struct, room)
     {
-        if(struct == STRUCTURE_EXTENSION)
+        if(struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION)
         {
-
-            var pos = Game.spawns.Spawn1.pos;
-
-            var result = room.lookAtArea(pos.y + 2, pos.x - 2, 49, pos.x + 2, false);
-
-            var skipX = false;
-            var skipY = false;
-
-            for(var yPos in result)
+            
+            var startingPoint = null; 
+            
+            if(struct == STRUCTURE_TOWER)
             {
-                for(var xPos in result[yPos])
+                startingPoint = room.controller.pos;
+            }
+            else {
+                var spawns = room.find(FIND_MY_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN});
+                startingPoint = spawns[0].pos;
+            }
+            
+            var distance = 1;
+            
+            var search = true;
+            
+            while(search)
+            {
+                var top = startingPoint.y - (distance);
+                var bottom = startingPoint.y + (distance);
+                var left = startingPoint.x - (distance);
+                var right = startingPoint.x + (distance);
+                
+                if(top < 5)
+                    top = 5;
+                    
+                if(left < 5)
+                    left = 5;
+                    
+                if(bottom > 45)
+                    bottom = 45;
+                    
+                if(right > 45)
+                    right = 45;
+                
+                var result = room.lookAtArea(top, left, bottom, right, false);
+                
+                for(var y = top; y <= bottom; y++)
                 {
-                    if(skipX)
+                    for(var x = left; x <= right; x++)
                     {
-                        skipX = false;
-                    }
-                    else {
-                        skipX = true;
-                        var objectsOnPosition = result[yPos][xPos];
-
-                        if(objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall")
+                        if((x + y) % 2 == 0)
                         {
-                            return new RoomPosition(xPos, yPos, room.name);
+                            var objectsOnPosition = result[y][x];
+        
+                            if(objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall")
+                            {
+                                search = false;
+                                return new RoomPosition(x, y, room.name);
+                            }
                         }
                     }
                 }
-            }
-        }
-        else if(struct == STRUCTURE_TOWER)
-        {
-            var pos = room.controller.pos;
-            var result = room.lookAtArea(pos.y + 1, pos.x - 3, 49 - pos.y, pos.x + 3, false);
-
-            for(var yPos in result)
-            {
-                for(var xPos in result[yPos])
-                {
-                    var objectsOnPosition = result[yPos][xPos];
-
-                    if(objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall")
-                    {
-                        return new RoomPosition(xPos, yPos, room.name);
-                    }
-                }
+                
+                distance++;
             }
         }
 
