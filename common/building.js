@@ -134,7 +134,7 @@ module.exports = {
                 {
                     for(var x = left; x <= right; x++)
                     {
-                        if((x + y) % 2 == 0)
+                        if((x + y) % 2 == 1)
                         {
                             var objectsOnPosition = result[y][x];
         
