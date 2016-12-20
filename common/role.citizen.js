@@ -56,7 +56,11 @@ var roleCitizen = {
                     
                     var repairTargets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            var possibleStructure =  structure.structureType == STRUCTURE_RAMPART;
+                            
+                            if(structure.structureType != STRUCTURE_RAMPART)
+                                return false;
+                            
+                            var possibleStructure = structure;
                             
                             if(Memory.BuildingInfo[possibleStructure.id] === undefined)
                                 Memory.BuildingInfo[possibleStructure.id] = {};
@@ -65,7 +69,7 @@ var roleCitizen = {
                             {
                                 Memory.BuildingInfo[possibleStructure.id].needUpgrade = false;
                             }
-                            
+
                             if(possibleStructure.hits < possibleStructure.hitsMax * 0.5)
                             {
                                 Memory.BuildingInfo[possibleStructure.id] = {needUpgrade: true};
@@ -76,7 +80,7 @@ var roleCitizen = {
                             }
                         }
                     });
-                        
+                        console.log("repair count " + repairTargets.length);
                     if(repairTargets.length > 0)
                     {
                         if (creep.repair(repairTargets[0]) == ERR_NOT_IN_RANGE) {
