@@ -5,8 +5,13 @@ var roleCitizen = {
     
         for(var flagName in Game.flags)
         {
-            var flag = creep.moveTo(Game.flags[flagName]);
-            return true;
+            var flag = Game.flags[flagName];
+            if(flag.room.name != creep.room.name)
+            {
+                creep.moveTo(flag);
+        
+                return true;
+            }
         }
         
         if(creep.carry.energy == creep.carryCapacity)
