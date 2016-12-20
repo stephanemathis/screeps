@@ -28,7 +28,9 @@ var roleMiner = {
                                 isSpotReserved = true;
                         }
                         if(!isSpotReserved)
+                        {
                             creep.memory.targetSourceId = sources[i].id;
+                        }
                     }
                 }
             }

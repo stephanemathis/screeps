@@ -15,7 +15,7 @@ module.exports = {
         {
             Memory.spawnQueue = ["citizen", "miner", "miner", "citizen", "citizen", "citizen"];
         }
-
+        
         if(Memory.CreepCount === undefined)
         {
             Memory.CreepCount = 0;
@@ -37,7 +37,7 @@ module.exports = {
                 Memory.spawnQueue.push(creepsRole);
             }
         }
-
+    
     },
 
     spawnIfNecessary()
@@ -74,11 +74,11 @@ module.exports = {
     {
         var maxEnergy = 300 + building.countExistingStructures(STRUCTURE_EXTENSION, spawn.room) * 50;
 
-        // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
+        // A la fin du tableau ?a recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
-            "upgrader" : [CARRY, WORK, MOVE, CARRY, CARRY, MOVE, WORK],
-            "citizen" : [WORK, MOVE, CARRY, CARRY, MOVE, WORK],
-            "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK]
+            "upgrader" : [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
+            "citizen" : [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
+            "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, WORK, WORK]
         };
 
         var availableParts = idealParts[role];
@@ -107,7 +107,7 @@ module.exports = {
             }
         }
 
-        return parts;
+        return parts.sort();
     },
 
     getPartCost(part)

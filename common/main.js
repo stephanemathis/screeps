@@ -6,7 +6,7 @@ var building = require("building");
 var defender = require("defender");
 var events = require("events");
 
-module.exports.loop = function ()
+module.exports.loop = function () 
 {
     events.tick();
     spawner.tick();
@@ -21,8 +21,12 @@ module.exports.loop = function ()
 
         if(creep.memory.role == 'citizen')
         roleCitizen.run(creep);
-
+        
         if(creep.memory.role == 'miner')
         roleMiner.run(creep);
     }
 }
+    
+
+
+
