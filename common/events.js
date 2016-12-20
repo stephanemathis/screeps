@@ -28,6 +28,14 @@ module.exports = {
         {
             spawner.addToSpawnQueue(["upgrader", "citizen", "citizen", "citizen", "citizen", "citizen", "citizen"]);
         }
+        
+        if(Memory.BuildingInfo)
+        {
+            for(var structureName in Memory.BuildingInfo)
+            {
+                Memory.BuildingInfo[structureName].needUpgrade = true;
+            }
+        }
     },
     
     GetControllerLevel()

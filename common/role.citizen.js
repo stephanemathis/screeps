@@ -3,6 +3,11 @@ var roleCitizen = {
     /** @param {Creep} creep **/
     run: function(creep) {
     
+        for(var flagName in Game.flags)
+        {
+            var flag = creep.moveTo(Game.flags[flagName]);
+            return true;
+        }
         
         if(creep.carry.energy == creep.carryCapacity)
             creep.memory.dispatch = true;
@@ -80,7 +85,7 @@ var roleCitizen = {
                             }
                         }
                     });
-                        console.log("repair count " + repairTargets.length);
+                        
                     if(repairTargets.length > 0)
                     {
                         if (creep.repair(repairTargets[0]) == ERR_NOT_IN_RANGE) {
