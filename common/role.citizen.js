@@ -58,6 +58,9 @@ var roleCitizen = {
                         filter: (structure) => {
                             var possibleStructure =  structure.structureType == STRUCTURE_RAMPART;
                             
+                            if(Memory.BuildingInfo[possibleStructure.id] === undefined)
+                                Memory.BuildingInfo[possibleStructure.id] = {};
+                            
                             if(possibleStructure.hits == possibleStructure.hitsMax)
                             {
                                 Memory.BuildingInfo[possibleStructure.id].needUpgrade = false;
