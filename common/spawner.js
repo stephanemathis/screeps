@@ -77,8 +77,11 @@ module.exports = {
         // A la fin du tableau ?a recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
             "upgrader" : [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
-            "citizen" : [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
-            "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, WORK, WORK]
+            "upgraderMaxParts" : 18,
+            "citizen" : [WORK, MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
+            "citizenMaxParts" : 18,
+            "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE],
+            "minerMaxParts" : 11
         };
 
         var availableParts = idealParts[role];
@@ -95,7 +98,7 @@ module.exports = {
 
             var totalCost = cost + totalEnergy;
 
-            if(totalCost > maxEnergy)
+            if(totalCost > maxEnergy || parts.length >= idealParts[role+"MaxParts"])
             {
                 hasEnoughenergy = false;
             }
