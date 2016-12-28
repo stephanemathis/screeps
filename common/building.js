@@ -35,13 +35,13 @@ module.exports = {
     {
         var controllerLevel = room.controller.level;
 
-        var structPriority = [STRUCTURE_TOWER, STRUCTURE_EXTENSION];
+        var structPriority = [STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_RAMPART];
 
         for(var i = 0 ; i < structPriority.length; i++)
         {
             var struct = structPriority[i];
 
-            var max = this.getMaxStructureNumber(struct, controllerLevel);
+            var max = this.getMaxStructureNumber(struct, controllerLevel, room);
             var count = this.countExistingStructures(struct, room);
 
             if(count < max)
@@ -61,7 +61,7 @@ module.exports = {
     },
 
     //Voir pour le nombre max d'objet par level : http://support.screeps.com/hc/en-us/articles/203086021-Global-control
-    getMaxStructureNumber(struct, level)
+    getMaxStructureNumber(struct, level, room)
     {
         if(struct == STRUCTURE_EXTENSION)
         {
@@ -85,6 +85,40 @@ module.exports = {
             else
             return 6;
         }
+        
+        if(struct == STRUCTURE_RAMPART)
+        {
+            
+            if(level<2)
+                return 0;
+            else {
+                var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
+                    
+                var nbOfRampartsToBuild = 0;
+                
+                for(var i = 0 ; i < towers.length; i++)
+                {
+                    var results = room.lookAt(towers[i].pos);
+
+                    var hasRampart = false;
+                    
+                    for(var j = 0; j < results.length; j++)
+                    {
+                        if(results[j].type == "structure" && results[j].structure.structureType == STRUCTURE_RAMPART)
+                        {
+                            hasRampart = true;
+                        }
+                    }
+                    
+                    if(!hasRampart)
+                    {
+                        nbOfRampartsToBuild = nbOfRampartsToBuild + 1;
+                    }
+                }
+                
+                return nbOfRampartsToBuild;
+            }
+        }
 
         return 0;
     },
@@ -93,7 +127,6 @@ module.exports = {
     {
         if(struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION)
         {
-            
             var startingPoint = null; 
             
             if(struct == STRUCTURE_TOWER)
@@ -148,6 +181,31 @@ module.exports = {
                 }
                 
                 distance++;
+            }
+        }
+        
+        if(struct == STRUCTURE_RAMPART)
+        {
+            var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
+                    
+            for(var i = 0 ; i < towers.length; i++)
+            {
+                var results = room.lookAt(towers[i].pos);
+
+                var hasRampart = false;
+                
+                for(var j = 0; j < results.length; j++)
+                {
+                    if(results[j].type == "structure" && results[j].structure.structureType == STRUCTURE_RAMPART)
+                    {
+                        hasRampart = true;
+                    }
+                }
+                
+                if(!hasRampart)
+                {
+                    return towers[i].pos;
+                }
             }
         }
 
