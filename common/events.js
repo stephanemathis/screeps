@@ -26,7 +26,7 @@ module.exports = {
     
         if(newLevel == 2)
         {
-            spawner.addToSpawnQueue(["upgrader", "citizen", "citizen", "citizen", "citizen", "citizen", "citizen"]);
+            spawner.addToSpawnQueue(["upgrader", "citizen", "citizen", "citizen", "citizen"]);
         }
         
         if(Memory.BuildingInfo)

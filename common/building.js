@@ -35,7 +35,7 @@ module.exports = {
     {
         var controllerLevel = room.controller.level;
 
-        var structPriority = [STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_RAMPART];
+        var structPriority = [STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_RAMPART, STRUCTURE_CONTAINER];
 
         for(var i = 0 ; i < structPriority.length; i++)
         {
@@ -117,6 +117,17 @@ module.exports = {
                 }
                 
                 return nbOfRampartsToBuild;
+            }
+        }
+        
+        if(struct == STRUCTURE_CONTAINER)
+        {
+            if(level < 2)
+                return 0;
+            else
+            {
+                var sources = room.find(FIND_SOURCES);
+                return sources.length;
             }
         }
 
@@ -206,6 +217,25 @@ module.exports = {
                 {
                     return towers[i].pos;
                 }
+            }
+        }
+        
+        if(struct == STRUCTURE_CONTAINER)
+        {
+            var sources = room.find(FIND_SOURCES);
+            for(var i = 0 ; i < sources.length; i++)
+            {
+                var pos = sources[i].pos;
+				var result = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);
+
+				var numberOfContainer = result.filter((p) => { return p.type === "structure" && p.structure.structureType == "container" });
+
+				if(numberOfContainer.length == 0)
+				{
+                    var path = room.findPath(room.controller.pos, sources[i].pos, { ignoreCreeps : true });
+                    var lastStep = path.length == 1 ? path[0] : path[path.length - 2];
+                    return new RoomPosition(lastStep.x, lastStep.y, room.name);
+				}
             }
         }
 

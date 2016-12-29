@@ -13,7 +13,7 @@ module.exports = {
     {
         if(Memory.spawnQueue === undefined)
         {
-            Memory.spawnQueue = ["citizen", "miner", "miner", "citizen", "citizen", "citizen"];
+            Memory.spawnQueue = ["citizen", "citizen", "citizen", "miner", "miner", "citizen"];
         }
         
         if(Memory.CreepCount === undefined)
@@ -52,18 +52,28 @@ module.exports = {
                 if(Memory.spawnQueue.length > 0)
                 {
                     var nextCreepRole = Memory.spawnQueue[0];
-                    var parts = this.getParts(nextCreepRole, spawn);
-
-                    var spawnReslt = spawn.canCreateCreep(parts);
-
-                    if(spawnReslt === 0)
+                    if(!nextCreepRole)
                     {
-                        var result = spawn.createCreep(parts, nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
-
-                        console.log("Creating new creep : " + nextCreepRole);
-
                         Memory.spawnQueue.shift();
-                        Memory.CreepCount += 1;
+                        if(Memory.spawnQueue.length > 0)
+                            nextCreepRole = Memory.spawnQueue[0];
+                    }
+                    
+                    if(nextCreepRole)
+                    {
+                        var parts = this.getParts(nextCreepRole, spawn);
+    
+                        var spawnReslt = spawn.canCreateCreep(parts);
+    
+                        if(spawnReslt === 0)
+                        {
+                            var result = spawn.createCreep(parts, nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
+    
+                            console.log("Creating new creep : " + nextCreepRole);
+    
+                            Memory.spawnQueue.shift();
+                            Memory.CreepCount += 1;
+                        }
                     }
                 }
             }
@@ -80,7 +90,7 @@ module.exports = {
             "upgraderMaxParts" : 18,
             "citizen" : [WORK, MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
             "citizenMaxParts" : 18,
-            "miner" : [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE],
+            "miner" : [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
             "minerMaxParts" : 11
         };
 
