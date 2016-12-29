@@ -11,26 +11,22 @@ module.exports = {
 
     init()
     {
-        if(Memory.spawnQueue === undefined)
-        {
+        if (Memory.spawnQueue === undefined) {
             Memory.spawnQueue = ["citizen", "citizen", "citizen", "miner", "miner", "citizen"];
         }
 
-        if(Memory.CreepCount === undefined)
-        {
+        if (Memory.CreepCount === undefined) {
             Memory.CreepCount = 0;
         }
     },
 
     addToSpawnQueue(creepsRole, front)
     {
-        if(front)
-        {
+        if (front) {
             Memory.spawnQueue.unshift(creepsRole);
         }
         else {
-            if(creepsRole.constructor === Array)
-            {
+            if (creepsRole.constructor === Array) {
                 Memory.spawnQueue = Memory.spawnQueue.concat(creepsRole);
             }
             else {
@@ -43,31 +39,25 @@ module.exports = {
     spawnIfNecessary()
     {
 
-        for(var spawnName in Game.spawns)
-        {
+        for (var spawnName in Game.spawns) {
             var spawn = Game.spawns[spawnName];
 
-            if(spawn.spawning == null)
-            {
-                if(Memory.spawnQueue.length > 0)
-                {
+            if (spawn.spawning == null) {
+                if (Memory.spawnQueue.length > 0) {
                     var nextCreepRole = Memory.spawnQueue[0];
-                    if(!nextCreepRole)
-                    {
+                    if (!nextCreepRole) {
                         Memory.spawnQueue.shift();
-                        if(Memory.spawnQueue.length > 0)
+                        if (Memory.spawnQueue.length > 0)
                             nextCreepRole = Memory.spawnQueue[0];
                     }
 
-                    if(nextCreepRole)
-                    {
+                    if (nextCreepRole) {
                         var parts = this.getParts(nextCreepRole, spawn);
 
                         var spawnReslt = spawn.canCreateCreep(parts);
 
-                        if(spawnReslt === 0)
-                        {
-                            var result = spawn.createCreep(parts, nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
+                        if (spawnReslt === 0) {
+                            var result = spawn.createCreep(parts, nextCreepRole + " " + Memory.CreepCount, {role: nextCreepRole});
 
                             console.log("Creating new creep : " + nextCreepRole);
 
@@ -86,12 +76,12 @@ module.exports = {
 
         // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
-            "upgrader" : [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
-            "upgraderMaxParts" : 18,
-            "citizen" : [WORK, MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
-            "citizenMaxParts" : 18,
-            "miner" : [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
-            "minerMaxParts" : 11
+            "upgrader": [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
+            "upgraderMaxParts": 18,
+            "citizen": [WORK, MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
+            "citizenMaxParts": 18,
+            "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
+            "minerMaxParts": 11
         };
 
         var availableParts = idealParts[role];
@@ -100,20 +90,17 @@ module.exports = {
         var index = 0;
         var totalEnergy = 0;
 
-        while(hasEnoughenergy)
-        {
+        while (hasEnoughenergy) {
             var nextPart = availableParts[index % availableParts.length];
 
             var cost = this.getPartCost(nextPart);
 
             var totalCost = cost + totalEnergy;
 
-            if(totalCost > maxEnergy || parts.length >= idealParts[role+"MaxParts"])
-            {
+            if (totalCost > maxEnergy || parts.length >= idealParts[role + "MaxParts"]) {
                 hasEnoughenergy = false;
             }
-            else
-            {
+            else {
                 parts.push(nextPart);
                 totalEnergy += cost;
                 index = index + 1;
@@ -140,9 +127,8 @@ module.exports = {
     },
 
     respawnDeadCreeps() {
-        for(var i in Memory.creeps)
-        {
-            if(!Game.creeps[i]) {
+        for (var i in Memory.creeps) {
+            if (!Game.creeps[i]) {
                 this.addToSpawnQueue(Memory.creeps[i].role, true);
                 delete Memory.creeps[i];
             }

@@ -1,26 +1,21 @@
-
 module.exports = {
     tick()
     {
-        for(var roomName in Game.rooms)
-        {
+        for (var roomName in Game.rooms) {
             var room = Game.rooms[roomName];
             var hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
 
-            if(hostiles.length > 0) {
+            if (hostiles.length > 0) {
 
-                for(var spawnName in room.spawns)
-                {
+                for (var spawnName in room.spawns) {
                     var spawn = room.spawns[spawnName];
-                    if(spawn.hits < spawn.hitsMax)
-                    {
+                    if (spawn.hits < spawn.hitsMax) {
                         spawn.activateSafeMode();
                     }
                 }
 
                 var username = hostiles[0].owner.username;
-                if(username != "Invader")
-                {
+                if (username != "Invader") {
                     Game.notify(`User ${username} spotted in room ${roomName}`);
                 }
                 var towers = room.find(

@@ -6,14 +6,13 @@ module.exports = {
     {
         var controllerLevel = this.GetControllerLevel();
 
-        if(controllerLevel != Memory.ControllerLevel)
+        if (controllerLevel != Memory.ControllerLevel)
             this.OnControllerLevelChanged(controllerLevel);
     },
 
     init()
     {
-        if(Memory.ControllerLevel === undefined)
-        {
+        if (Memory.ControllerLevel === undefined) {
             Memory.ControllerLevel = this.GetControllerLevel();
         }
     },
@@ -24,15 +23,12 @@ module.exports = {
 
         console.log("New controller level : " + newLevel);
 
-        if(newLevel == 2)
-        {
+        if (newLevel == 2) {
             spawner.addToSpawnQueue(["upgrader", "citizen", "citizen", "citizen", "citizen"]);
         }
 
-        if(Memory.BuildingInfo)
-        {
-            for(var structureName in Memory.BuildingInfo)
-            {
+        if (Memory.BuildingInfo) {
+            for (var structureName in Memory.BuildingInfo) {
                 Memory.BuildingInfo[structureName].needUpgrade = true;
             }
         }
@@ -45,8 +41,7 @@ module.exports = {
 
     GetRoom()
     {
-        for(var name in Game.rooms)
-        {
+        for (var name in Game.rooms) {
             return Game.rooms[name];
         }
     },
