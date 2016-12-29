@@ -25,6 +25,7 @@ module.exports = {
                     {
                         console.log("Creating building : " + nextStructure + " ("+position.x+"-"+position.y+")");
                         room.createConstructionSite(position.x, position.y, nextStructure);
+
                     }
                 }
             }
@@ -45,7 +46,7 @@ module.exports = {
             var count = this.countExistingStructures(struct, room);
 
             if(count < max)
-            return struct;
+                return struct;
         }
 
         return null;
@@ -66,31 +67,31 @@ module.exports = {
         if(struct == STRUCTURE_EXTENSION)
         {
             if(level < 2)
-            return 0;
+                return 0;
             else if(level == 2)
-            return 5;
+                return 5;
             else return 10 * (level - 2);
         }
 
         if(struct == STRUCTURE_TOWER)
         {
             if(level < 3)
-            return 0;
+                return 0;
             else if(level < 5)
-            return 1;
+                return 1;
             else if(level < 7)
-            return 2;
+                return 2;
             else if(level < 8)
-            return 3;
+                return 3;
             else
-            return 6;
+                return 6;
         }
 
         if(struct == STRUCTURE_RAMPART)
         {
 
             if(level<2)
-            return 0;
+                return 0;
             else {
                 var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
 
@@ -123,7 +124,7 @@ module.exports = {
         if(struct == STRUCTURE_CONTAINER)
         {
             if(level < 2)
-            return 0;
+                return 0;
             else
             {
                 var sources = room.find(FIND_SOURCES);
@@ -161,16 +162,16 @@ module.exports = {
                 var right = startingPoint.x + (distance);
 
                 if(top < 5)
-                top = 5;
+                    top = 5;
 
                 if(left < 5)
-                left = 5;
+                    left = 5;
 
                 if(bottom > 45)
-                bottom = 45;
+                    bottom = 45;
 
                 if(right > 45)
-                right = 45;
+                    right = 45;
 
                 var result = room.lookAtArea(top, left, bottom, right, false);
 

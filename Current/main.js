@@ -18,12 +18,12 @@ module.exports.loop = function ()
         var creep = Game.creeps[name];
 
         if(creep.memory.role == 'upgrader')
-        roleUpgrader.run(creep);
+            roleUpgrader.run(creep);
 
         if(creep.memory.role == 'citizen')
-        roleCitizen.run(creep);
+            roleCitizen.run(creep);
 
         if(creep.memory.role == 'miner')
-        roleMiner.run(creep);
+            roleMiner.run(creep);
     }
 }

@@ -56,7 +56,7 @@ module.exports = {
                     {
                         Memory.spawnQueue.shift();
                         if(Memory.spawnQueue.length > 0)
-                        nextCreepRole = Memory.spawnQueue[0];
+                            nextCreepRole = Memory.spawnQueue[0];
                     }
 
                     if(nextCreepRole)

@@ -7,7 +7,7 @@ module.exports = {
         var controllerLevel = this.GetControllerLevel();
 
         if(controllerLevel != Memory.ControllerLevel)
-        this.OnControllerLevelChanged(controllerLevel);
+            this.OnControllerLevelChanged(controllerLevel);
     },
 
     init()

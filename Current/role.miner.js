@@ -19,7 +19,7 @@ var roleMiner = {
                     for(var creepName in Game.creeps)
                     {
                         if(Game.creeps[creepName].memory.targetSourceId == sources[i].id)
-                        isSpotReserved = true;
+                            isSpotReserved = true;
                     }
 
                     if(!isSpotReserved)
@@ -33,7 +33,7 @@ var roleMiner = {
         var source = Game.getObjectById(creep.memory.targetSourceId);
 
         if(!source)
-        creep.memory.targetSourceId = null;
+            creep.memory.targetSourceId = null;
 
         var res = creep.room.lookForAt(LOOK_STRUCTURES, creep.pos.x, creep.pos.y);
 

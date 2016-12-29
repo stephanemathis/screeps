@@ -15,9 +15,9 @@ var roleCitizen = {
         }
 
         if(creep.carry.energy == creep.carryCapacity)
-        creep.memory.dispatch = true;
+            creep.memory.dispatch = true;
         else if(!creep.carry.energy)
-        creep.memory.dispatch = false;
+            creep.memory.dispatch = false;
 
         if(creep.memory.dispatch == false)
         {
@@ -37,7 +37,7 @@ var roleCitizen = {
                     }
 
                     if(pickResult == OK)
-                    needMoreEnergy = false;
+                        needMoreEnergy = false;
                 }
             }
 
@@ -56,7 +56,7 @@ var roleCitizen = {
                     }
 
                     if(withdrawResult == OK)
-                    needMoreEnergy = false;
+                        needMoreEnergy = false;
                 }
             }
 
@@ -96,18 +96,18 @@ var roleCitizen = {
                 else {
 
                     if(Memory.BuildingInfo === undefined)
-                    Memory.BuildingInfo = {};
+                        Memory.BuildingInfo = {};
 
                     var repairTargets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
 
                             if(structure.structureType != STRUCTURE_RAMPART)
-                            return false;
+                                return false;
 
                             var possibleStructure = structure;
 
                             if(Memory.BuildingInfo[possibleStructure.id] === undefined)
-                            Memory.BuildingInfo[possibleStructure.id] = {};
+                                Memory.BuildingInfo[possibleStructure.id] = {};
 
                             if(possibleStructure.hits == possibleStructure.hitsMax)
                             {
