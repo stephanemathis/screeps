@@ -81,7 +81,7 @@ module.exports = {
             "citizen": [WORK, MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
             "citizenMaxParts": 18,
             "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
-            "minerMaxParts": 11
+            "minerMaxParts": 10
         };
 
         var availableParts = idealParts[role];
