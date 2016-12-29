@@ -105,6 +105,11 @@ module.exports = {
                     }
                 }
 
+                /*var lookResult = room.lookForAt(LOOK_STRUCTURES, room.controller);
+                if(lookResult.filter((s) => { return s.structureType == STRUCTURE_CONTAINER }).length == 0)
+                    nbOfRampartsToBuild = nbOfRampartsToBuild + 1;
+                */
+
                 return nbOfRampartsToBuild;
             }
         }

@@ -78,7 +78,7 @@ module.exports = {
         var idealParts = {
             "upgrader": [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
             "upgraderMaxParts": 18,
-            "citizen": [WORK, MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
+            "citizen": [WORK, MOVE, CARRY, MOVE, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
             "citizenMaxParts": 18,
             "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
             "minerMaxParts": 10

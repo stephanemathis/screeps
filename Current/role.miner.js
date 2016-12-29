@@ -8,11 +8,11 @@ var roleMiner = {
                 var pos = sources[i].pos;
                 var result = creep.room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);
 
-                var numberOfMiners = result.filter((p) => {
-                    p.type == "creep" && p.creep.memory.role == "miner"
+                var miners = result.filter((p) => {
+                    return p.type == "creep" && p.creep.memory.role == "miner"
                 });
 
-                if (numberOfMiners == 0) {
+                if (miners.length == 0) {
                     var isSpotReserved = false;
                     for (var creepName in Game.creeps) {
                         if (Game.creeps[creepName].memory.targetSourceId == sources[i].id)
