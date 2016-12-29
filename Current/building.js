@@ -1,6 +1,6 @@
 module.exports = {
 
-    tick() 
+    tick()
     {
         this.createBuildingIfNecessary();
     },
@@ -45,7 +45,7 @@ module.exports = {
             var count = this.countExistingStructures(struct, room);
 
             if(count < max)
-                return struct;
+            return struct;
         }
 
         return null;
@@ -85,23 +85,23 @@ module.exports = {
             else
             return 6;
         }
-        
+
         if(struct == STRUCTURE_RAMPART)
         {
-            
+
             if(level<2)
-                return 0;
+            return 0;
             else {
                 var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-                    
+
                 var nbOfRampartsToBuild = 0;
-                
+
                 for(var i = 0 ; i < towers.length; i++)
                 {
                     var results = room.lookAt(towers[i].pos);
 
                     var hasRampart = false;
-                    
+
                     for(var j = 0; j < results.length; j++)
                     {
                         if(results[j].type == "structure" && results[j].structure.structureType == STRUCTURE_RAMPART)
@@ -109,21 +109,21 @@ module.exports = {
                             hasRampart = true;
                         }
                     }
-                    
+
                     if(!hasRampart)
                     {
                         nbOfRampartsToBuild = nbOfRampartsToBuild + 1;
                     }
                 }
-                
+
                 return nbOfRampartsToBuild;
             }
         }
-        
+
         if(struct == STRUCTURE_CONTAINER)
         {
             if(level < 2)
-                return 0;
+            return 0;
             else
             {
                 var sources = room.find(FIND_SOURCES);
@@ -138,8 +138,8 @@ module.exports = {
     {
         if(struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION)
         {
-            var startingPoint = null; 
-            
+            var startingPoint = null;
+
             if(struct == STRUCTURE_TOWER)
             {
                 startingPoint = room.controller.pos;
@@ -148,32 +148,32 @@ module.exports = {
                 var spawns = room.find(FIND_MY_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN});
                 startingPoint = spawns[0].pos;
             }
-            
+
             var distance = 1;
-            
+
             var search = true;
-            
+
             while(search)
             {
                 var top = startingPoint.y - (distance);
                 var bottom = startingPoint.y + (distance);
                 var left = startingPoint.x - (distance);
                 var right = startingPoint.x + (distance);
-                
+
                 if(top < 5)
-                    top = 5;
-                    
+                top = 5;
+
                 if(left < 5)
-                    left = 5;
-                    
+                left = 5;
+
                 if(bottom > 45)
-                    bottom = 45;
-                    
+                bottom = 45;
+
                 if(right > 45)
-                    right = 45;
-                
+                right = 45;
+
                 var result = room.lookAtArea(top, left, bottom, right, false);
-                
+
                 for(var y = top; y <= bottom; y++)
                 {
                     for(var x = left; x <= right; x++)
@@ -181,7 +181,7 @@ module.exports = {
                         if((x + y) % 2 == 1)
                         {
                             var objectsOnPosition = result[y][x];
-        
+
                             if(objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall")
                             {
                                 search = false;
@@ -190,21 +190,21 @@ module.exports = {
                         }
                     }
                 }
-                
+
                 distance++;
             }
         }
-        
+
         if(struct == STRUCTURE_RAMPART)
         {
             var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-                    
+
             for(var i = 0 ; i < towers.length; i++)
             {
                 var results = room.lookAt(towers[i].pos);
 
                 var hasRampart = false;
-                
+
                 for(var j = 0; j < results.length; j++)
                 {
                     if(results[j].type == "structure" && results[j].structure.structureType == STRUCTURE_RAMPART)
@@ -212,30 +212,30 @@ module.exports = {
                         hasRampart = true;
                     }
                 }
-                
+
                 if(!hasRampart)
                 {
                     return towers[i].pos;
                 }
             }
         }
-        
+
         if(struct == STRUCTURE_CONTAINER)
         {
             var sources = room.find(FIND_SOURCES);
             for(var i = 0 ; i < sources.length; i++)
             {
                 var pos = sources[i].pos;
-				var result = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);
+                var result = room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);
 
-				var numberOfContainer = result.filter((p) => { return p.type === "structure" && p.structure.structureType == "container" });
+                var numberOfContainer = result.filter((p) => { return p.type === "structure" && p.structure.structureType == "container" });
 
-				if(numberOfContainer.length == 0)
-				{
+                if(numberOfContainer.length == 0)
+                {
                     var path = room.findPath(room.controller.pos, sources[i].pos, { ignoreCreeps : true });
                     var lastStep = path.length == 1 ? path[0] : path[path.length - 2];
                     return new RoomPosition(lastStep.x, lastStep.y, room.name);
-				}
+                }
             }
         }
 

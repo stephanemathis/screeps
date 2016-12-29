@@ -6,9 +6,9 @@ module.exports = {
         {
             var room = Game.rooms[roomName];
             var hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
-            
+
             if(hostiles.length > 0) {
-                
+
                 for(var spawnName in room.spawns)
                 {
                     var spawn = room.spawns[spawnName];
@@ -17,7 +17,7 @@ module.exports = {
                         spawn.activateSafeMode();
                     }
                 }
-                
+
                 var username = hostiles[0].owner.username;
                 if(username != "Invader")
                 {
@@ -25,9 +25,9 @@ module.exports = {
                 }
                 var towers = room.find(
                     FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
-                    
-                towers.forEach(tower => tower.attack(hostiles[0]));
+
+                    towers.forEach(tower => tower.attack(hostiles[0]));
+                }
             }
-        }
-    },
-};
+        },
+    };

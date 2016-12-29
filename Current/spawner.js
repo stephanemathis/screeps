@@ -15,7 +15,7 @@ module.exports = {
         {
             Memory.spawnQueue = ["citizen", "citizen", "citizen", "miner", "miner", "citizen"];
         }
-        
+
         if(Memory.CreepCount === undefined)
         {
             Memory.CreepCount = 0;
@@ -37,7 +37,7 @@ module.exports = {
                 Memory.spawnQueue.push(creepsRole);
             }
         }
-    
+
     },
 
     spawnIfNecessary()
@@ -56,21 +56,21 @@ module.exports = {
                     {
                         Memory.spawnQueue.shift();
                         if(Memory.spawnQueue.length > 0)
-                            nextCreepRole = Memory.spawnQueue[0];
+                        nextCreepRole = Memory.spawnQueue[0];
                     }
-                    
+
                     if(nextCreepRole)
                     {
                         var parts = this.getParts(nextCreepRole, spawn);
-    
+
                         var spawnReslt = spawn.canCreateCreep(parts);
-    
+
                         if(spawnReslt === 0)
                         {
                             var result = spawn.createCreep(parts, nextCreepRole+ " " + Memory.CreepCount, {role: nextCreepRole});
-    
+
                             console.log("Creating new creep : " + nextCreepRole);
-    
+
                             Memory.spawnQueue.shift();
                             Memory.CreepCount += 1;
                         }
@@ -126,14 +126,14 @@ module.exports = {
     getPartCost(part)
     {
         var bodyCost = {
-          "move": 50,
-          "carry": 50,
-          "work": 100,
-          "heal": 250,
-          "tough": 10,
-          "attack": 80,
-          "ranged_attack": 150,
-          "claim": 600
+            "move": 50,
+            "carry": 50,
+            "work": 100,
+            "heal": 250,
+            "tough": 10,
+            "attack": 80,
+            "ranged_attack": 150,
+            "claim": 600
         };
 
         return bodyCost[part];
