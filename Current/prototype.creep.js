@@ -8,7 +8,7 @@ module.exports = function() {
         if (needMoreEnergy) {
             var containersWithEnergy = creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => i.structureType == STRUCTURE_CONTAINER && i.store[RESOURCE_ENERGY] > 0
-            });
+            }).sort((i, j) => { return j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY]});
 
             if (containersWithEnergy && containersWithEnergy.length > 0) {
                 var withdrawResult = creep.withdraw(containersWithEnergy[0], RESOURCE_ENERGY);

@@ -8,6 +8,12 @@ module.exports = {
 
         if (controllerLevel != Memory.ControllerLevel)
             this.OnControllerLevelChanged(controllerLevel);
+
+        for(var flagName in Game.flags) {
+            if(flagName == "Conquest") {
+                spawner.addClaimerIfNecessary();
+            }
+        }
     },
 
     init()

@@ -1,4 +1,5 @@
 var building = require("building");
+var _ = require('lodash');
 
 module.exports = {
 
@@ -11,8 +12,16 @@ module.exports = {
 
     init()
     {
-        if (Memory.spawnQueue === undefined) {
-            Memory.spawnQueue = ["citizen", "citizen", "citizen", "miner", "miner", "citizen"];
+        for(var roomName in Game.rooms) {
+
+            if(Memory[roomName] === undefined) {
+                if(Memory[roomName].spawnQueue === undefined)
+                    Memory[roomName].spawnQueue = {spawnQueue : ["citizen", "citizen", "citizen", "miner", "miner", "citizen"]};
+            }
+
+            if(_.filter(Game.flags, (f) => { return f.name == roomName }).length == 0) {
+                Game.rooms[roomName].createFlag(25, 25, roomName);
+            }
         }
 
         if (Memory.CreepCount === undefined) {
@@ -20,17 +29,17 @@ module.exports = {
         }
     },
 
-    addToSpawnQueue(creepsRole, front)
+    addToSpawnQueue(creepsRole, front, roomName)
     {
         if (front) {
-            Memory.spawnQueue.unshift(creepsRole);
+            Memory[roomName].spawnQueue.unshift(creepsRole);
         }
         else {
             if (creepsRole.constructor === Array) {
-                Memory.spawnQueue = Memory.spawnQueue.concat(creepsRole);
+                Memory[roomName].spawnQueue = Memory[roomName].spawnQueue.concat(creepsRole);
             }
             else {
-                Memory.spawnQueue.push(creepsRole);
+                Memory[roomName].spawnQueue.push(creepsRole);
             }
         }
 
@@ -38,17 +47,18 @@ module.exports = {
 
     spawnIfNecessary()
     {
-
         for (var spawnName in Game.spawns) {
             var spawn = Game.spawns[spawnName];
 
             if (spawn.spawning == null) {
-                if (Memory.spawnQueue.length > 0) {
-                    var nextCreepRole = Memory.spawnQueue[0];
+                var roomName = spawn.room.name;
+                var roomSpawnQueue = Memory[roomName].spawnQueue;
+                if (roomSpawnQueue.length > 0) {
+                    var nextCreepRole = roomSpawnQueue[0];
                     if (!nextCreepRole) {
-                        Memory.spawnQueue.shift();
-                        if (Memory.spawnQueue.length > 0)
-                            nextCreepRole = Memory.spawnQueue[0];
+                        roomSpawnQueue.shift();
+                        if (roomSpawnQueue.length > 0)
+                            nextCreepRole = roomSpawnQueue[0];
                     }
 
                     if (nextCreepRole) {
@@ -57,7 +67,7 @@ module.exports = {
                         var spawnReslt = spawn.canCreateCreep(parts);
 
                         if (spawnReslt === 0) {
-                            var result = spawn.createCreep(parts, nextCreepRole + " " + Memory.CreepCount, {role: nextCreepRole});
+                            var result = spawn.createCreep(parts, nextCreepRole + " " + Memory.CreepCount, {role: nextCreepRole, roomName: spawn.room.name});
 
                             console.log("Creating new creep : " + nextCreepRole);
 
@@ -72,7 +82,7 @@ module.exports = {
 
     getParts(role, spawn)
     {
-        var maxEnergy = 300 + building.countExistingStructures(STRUCTURE_EXTENSION, spawn.room) * 50;
+        var maxEnergy = spawn.room.energyCapacityAvailable;
 
         // A la fin du tableau ça recommance ex : WORK, WORK, MOVE => WORK, WORK, MOVE, WORK, WORK, MOVE, ..
         var idealParts = {
@@ -81,7 +91,9 @@ module.exports = {
             "citizen": [WORK, MOVE, CARRY, MOVE, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE],
             "citizenMaxParts": 18,
             "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
-            "minerMaxParts": 10
+            "minerMaxParts": 10,
+            "claimer": [MOVE, CLAIM],
+            "claimerMaxParts": 9999
         };
 
         var availableParts = idealParts[role];
@@ -128,11 +140,32 @@ module.exports = {
 
     respawnDeadCreeps() {
         for (var i in Memory.creeps) {
-            if (!Game.creeps[i]) {
-                this.addToSpawnQueue(Memory.creeps[i].role, true);
+            if (!Game.creeps[i] && Memory.creeps[i].role != "claimer") {
+                this.addToSpawnQueue(Memory.creeps[i].role, true, Memory.creeps[i].roomName);
                 delete Memory.creeps[i];
             }
         }
 
+    },
+
+    addClaimerIfNecessary() {
+        var targetSpawn = null;
+
+        for (var spawnName in Game.spawns) {
+            var spawn = Game.spawns[spawnName];
+
+            if(spawn.room.energyCapacityAvailable > this.getPartCost([CLAIM, MOVE])) {
+                if(!targetSpawn || targetSpawn.room.energyCapacityAvailable < spawn.room.energyCapacityAvailable)
+                    targetSpawn = spawn;
+            }
+        }
+
+        if(targetSpawn != null) {
+            if(Memory[roomName].spawnQueue.includes("claimer") == false) {
+                if (_.filter((Game.creeps, (c) => { return c.memory.role == "claimer" })).length == 0) {
+                    this.addToSpawnQueue("claimer", false, targetSpawn.room.name);
+                }
+            }
+        }
     },
 };
