@@ -92,7 +92,7 @@ module.exports = {
             "citizenMaxParts": 18,
             "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
             "minerMaxParts": 10,
-            "claimer": [MOVE, CLAIM],
+            "claimer": [MOVE, CLAIM, MOVE, WORK],
             "claimerMaxParts": 9999
         };
 
