@@ -7,7 +7,7 @@ var roleMiner = {
 
         if(!creep.goToRoomIfNecessary()) {
             if (!creep.memory.targetSourceId) {
-                var sources = creep.room.find(FIND_SOURCES);
+                var sources = creep.room.find(FIND_SOURCES);//var sources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
                 for (var i = 0; i < sources.length; i++) {
                     var pos = sources[i].pos;
                     var result = creep.room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);

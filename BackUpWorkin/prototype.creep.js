@@ -12,7 +12,6 @@ module.exports = function() {
 
             if (containersWithEnergy && containersWithEnergy.length > 0) {
                 var withdrawResult = creep.withdraw(containersWithEnergy[0], RESOURCE_ENERGY);
-
                 if (withdrawResult == ERR_NOT_IN_RANGE) {
                     creep.moveTo(containersWithEnergy[0]);
                     needMoreEnergy = false;
@@ -24,7 +23,7 @@ module.exports = function() {
         }
 
         if (needMoreEnergy) {
-            var sources = creep.room.find(FIND_DROPPED_ENERGY).sort((i, j) => { return j.energy - i.energy});
+            var sources = creep.room.find(FIND_DROPPED_ENERGY);
 
             if (sources.length > 0) {
                 var pickResult = creep.pickup(sources[0]);
@@ -39,24 +38,10 @@ module.exports = function() {
         }
 
         if (needMoreEnergy) {
-            sources = creep.room.find(FIND_SOURCES);//sources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-            var targetSource = sources[0];
-            //targetSource = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-            if (creep.harvest(targetSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targetSource);
+            sources = creep.room.find(FIND_SOURCES);
+            if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(sources[0]);
             }
         }
-    };
-
-    Creep.prototype.goToRoomIfNecessary = function()
-    {
-        var creep = this;
-
-        if(creep.memory.roomName != creep.room.name) {
-            creep.moveTo(Game.flags[creep.memory.roomName]);
-            return true;
-        }
-
-        return false;
     };
 };
