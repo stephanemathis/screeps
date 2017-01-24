@@ -1,8 +1,6 @@
-var roleUpgrader = {
 
-    /** @param {Creep} creep **/
-    run: function (creep) {
-
+export function run(creep: Creep) {
+    if(!creep.goToRoomIfNecessary()) {
         if (creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
         }
@@ -19,6 +17,4 @@ var roleUpgrader = {
             creep.findAndPickEnergy();
         }
     }
-};
-
-module.exports = roleUpgrader;
+}

@@ -1,26 +1,33 @@
-"use strict";
-var roleUpgrader = require("./role.upgrader");
-var roleCitizen = require("./role.citizen");
-var roleMiner = require("./role.miner");
-var spawner = require("./spawner");
-var building = require("./building");
-var defender = require("./defender");
-var eventsManager = require("./events");
-var proto = require("./prototype.creep");
-function loop() {
+import * as roleUpgrader from "./role.upgrader";
+import * as roleCitizen from "./role.citizen";
+import * as roleMiner from "./role.miner";
+import * as spawner from "./spawner";
+import * as building from "./building";
+import * as defender from "./defender";
+import * as eventsManager from "./events";
+
+import * as proto from "./prototype.creep";
+
+export function loop() {
+
     proto.run();
+
     eventsManager.tick();
     spawner.tick();
     building.tick();
     defender.tick();
+
     for (var name in Game.creeps) {
+
         var creep = Game.creeps[name];
+
         if (creep.memory.role == 'upgrader')
             roleUpgrader.run(creep);
+
         if (creep.memory.role == 'citizen')
             roleCitizen.run(creep);
+
         if (creep.memory.role == 'miner')
             roleMiner.run(creep);
     }
 }
-exports.loop = loop;

@@ -1,19 +1,7 @@
-require('prototype.creep')();
 
-var roleCitizen = {
+export function run(creep: Creep) {
 
-    /** @param {Creep} creep **/
-    run: function (creep) {
-
-        for (var flagName in Game.flags) {
-            var flag = Game.flags[flagName];
-            if (flag.room.name != creep.room.name) {
-                creep.moveTo(flag);
-
-                return true;
-            }
-        }
-
+    if(!creep.goToRoomIfNecessary()) {
         if (creep.carry.energy == creep.carryCapacity)
             creep.memory.dispatch = true;
         else if (!creep.carry.energy)
@@ -25,7 +13,7 @@ var roleCitizen = {
         }
         else {
             // On cherche les structures qui ont besoin d'énergie (Spawn, Extension, ...)
-            var targetsFillEnergy = creep.room.find(FIND_STRUCTURES, {
+            var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
                 }
@@ -38,7 +26,7 @@ var roleCitizen = {
             }
             else {
                 // Sinon on cherche ce qu'il faut construire
-                var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+                var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
 
                 if (targets.length) {
                     if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
@@ -47,10 +35,10 @@ var roleCitizen = {
                 }
                 else {
 
-                    if (Memory.BuildingInfo === undefined)
-                        Memory.BuildingInfo = {};
+                    if (Memory.buildingUpgradeInfo === undefined)
+                        Memory.buildingUpgradeInfo = {};
 
-                    var repairTargets = creep.room.find(FIND_STRUCTURES, {
+                    var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
 
                             if (structure.structureType != STRUCTURE_RAMPART)
@@ -58,19 +46,16 @@ var roleCitizen = {
 
                             var possibleStructure = structure;
 
-                            if (Memory.BuildingInfo[possibleStructure.id] === undefined)
-                                Memory.BuildingInfo[possibleStructure.id] = {};
-
                             if (possibleStructure.hits == possibleStructure.hitsMax) {
-                                Memory.BuildingInfo[possibleStructure.id].needUpgrade = false;
+                                Memory.buildingUpgradeInfo[possibleStructure.id] = false;
                             }
 
                             if (possibleStructure.hits < possibleStructure.hitsMax * 0.5) {
-                                Memory.BuildingInfo[possibleStructure.id] = {needUpgrade: true};
+                                Memory.buildingUpgradeInfo[possibleStructure.id] = true;
                                 return true;
                             }
                             else {
-                                return !!Memory.BuildingInfo[possibleStructure.id].needUpgrade;
+                                return !!Memory.buildingUpgradeInfo[possibleStructure.id];
                             }
                         }
                     });
@@ -91,6 +76,4 @@ var roleCitizen = {
             }
         }
     }
-};
-
-module.exports = roleCitizen;
+}

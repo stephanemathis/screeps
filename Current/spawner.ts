@@ -1,14 +1,16 @@
-"use strict";
-function tick() {
+
+export function tick() {
     init();
     respawnDeadCreeps();
     spawnIfNecessary();
 }
-exports.tick = tick;
-function init() {
+
+export function init() {
     for (var roomName in Game.rooms) {
-        if (Memory.spawnQueue === undefined)
+
+        if(Memory.spawnQueue === undefined)
             Memory.spawnQueue = {};
+
         if (Memory.spawnQueue[roomName] === undefined) {
             Memory.spawnQueue[roomName] = [
                 getSpawnQueueTarget("citizen"),
@@ -19,7 +21,8 @@ function init() {
                 getSpawnQueueTarget("citizen"),
             ];
         }
-        if (!Game.flags[roomName]) {
+
+        if(!Game.flags[roomName]) {
             Game.rooms[roomName].createFlag(25, 25, roomName);
         }
     }
@@ -27,8 +30,8 @@ function init() {
         Memory.creepCount = 0;
     }
 }
-exports.init = init;
-function addToSpawnQueue(spawnTarget, front, spawnRoomName) {
+
+export function addToSpawnQueue(spawnTarget: SpawnQueueTarget, front: boolean, spawnRoomName: string) {
     if (front) {
         Memory.spawnQueue[spawnRoomName].unshift(spawnTarget);
     }
@@ -36,8 +39,8 @@ function addToSpawnQueue(spawnTarget, front, spawnRoomName) {
         Memory.spawnQueue[spawnRoomName].push(spawnTarget);
     }
 }
-exports.addToSpawnQueue = addToSpawnQueue;
-function spawnIfNecessary() {
+
+export function spawnIfNecessary() {
     for (var spawnName in Game.spawns) {
         var spawn = Game.spawns[spawnName];
         if (spawn.spawning == null) {
@@ -55,9 +58,9 @@ function spawnIfNecessary() {
                     var spawnReslt = spawn.canCreateCreep(parts);
                     if (spawnReslt === 0) {
                         var creepRoom = nextSpawnTarget.roomName;
-                        if (!creepRoom)
+                        if(!creepRoom)
                             creepRoom = roomName;
-                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role, nextSpawnTarget.respawnAfterDeath));
+                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role,nextSpawnTarget.respawnAfterDeath ));
                         console.log("Creating new creep : " + nextSpawnTarget);
                         Memory.spawnQueue[roomName].shift();
                         Memory.creepCount += 1;
@@ -67,8 +70,8 @@ function spawnIfNecessary() {
         }
     }
 }
-exports.spawnIfNecessary = spawnIfNecessary;
-function getParts(spawnTarget, spawn) {
+
+export function getParts(spawnTarget: SpawnQueueTarget, spawn: Spawn): string[] {
     var maxEnergy = spawn.room.energyCapacityAvailable;
     var idealParts = {
         "upgrader": [WORK, MOVE, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, MOVE],
@@ -100,8 +103,8 @@ function getParts(spawnTarget, spawn) {
     }
     return parts;
 }
-exports.getParts = getParts;
-function getPartCost(part) {
+
+export function getPartCost(part: string) {
     var bodyCost = {
         "move": 50,
         "carry": 50,
@@ -114,8 +117,8 @@ function getPartCost(part) {
     };
     return bodyCost[part];
 }
-exports.getPartCost = getPartCost;
-function respawnDeadCreeps() {
+
+export function respawnDeadCreeps() {
     for (var i in Memory.creeps) {
         if (!Game.creeps[i] && Memory.creeps[i].role != "claimer") {
             addToSpawnQueue(Memory.creeps[i].role, true, Memory.creeps[i].roomName);
@@ -123,8 +126,8 @@ function respawnDeadCreeps() {
         }
     }
 }
-exports.respawnDeadCreeps = respawnDeadCreeps;
-function addClaimerIfNecessary() {
+
+export function addClaimerIfNecessary() {
     var targetSpawn = null;
     for (var spawnName in Game.spawns) {
         var spawn = Game.spawns[spawnName];
@@ -134,21 +137,21 @@ function addClaimerIfNecessary() {
         }
     }
     if (targetSpawn != null) {
-        if (Memory.spawnQueue[targetSpawn.room.name].filter(function (st) { return st.role == "claimer"; }).length == 0) {
+        if (Memory.spawnQueue[targetSpawn.room.name].filter(st => {return st.role == "claimer"}).length == 0) {
             var nbOfclaimer = 0;
-            for (var creepName in Game.creeps) {
+            for(var creepName in Game.creeps) {
                 var creep = Game.creeps[creepName];
-                if (creep.memory.role == "claimer")
+                if(creep.memory.role == "claimer")
                     nbOfclaimer = nbOfclaimer + 1;
             }
-            if (nbOfclaimer == 0)
-                addToSpawnQueue(getSpawnQueueTarget("claimer", false), false, targetSpawn.room.name);
+
+            if(nbOfclaimer == 0)
+            addToSpawnQueue(getSpawnQueueTarget("claimer", false), false, targetSpawn.room.name);
         }
     }
 }
-exports.addClaimerIfNecessary = addClaimerIfNecessary;
-function getSpawnQueueTarget(role, respawnAfterDeath, roomName, maxParts) {
-    if (respawnAfterDeath === void 0) { respawnAfterDeath = true; }
+
+export function getSpawnQueueTarget(role: string, respawnAfterDeath = true, roomName?: string, maxParts?: number): SpawnQueueTarget {
     return {
         role: role,
         roomName: roomName,
@@ -156,12 +159,11 @@ function getSpawnQueueTarget(role, respawnAfterDeath, roomName, maxParts) {
         respawnAfterDeath: respawnAfterDeath
     };
 }
-exports.getSpawnQueueTarget = getSpawnQueueTarget;
-function getCreepMemory(roomName, role, respawnAfterDeath) {
+
+export function getCreepMemory(roomName: string, role: string, respawnAfterDeath: boolean): CreepMemory {
     return {
         roomName: roomName,
         role: role,
         respawnAfterDeath: respawnAfterDeath
     };
 }
-exports.getCreepMemory = getCreepMemory;
