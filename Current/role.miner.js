@@ -7,7 +7,7 @@ function run(creep) {
                 var pos = sources[i].pos;
                 var result = creep.room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);
                 var miners = result.filter(function (p) {
-                    return p.type == "creep" && p.creep.memory.role == "miner";
+                    return p.type == "creep" && p.creep.my && p.creep.memory.role == "miner";
                 });
                 if (miners.length == 0) {
                     var isSpotReserved = false;

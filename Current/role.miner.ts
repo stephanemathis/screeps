@@ -7,7 +7,7 @@ export function run(creep: Creep) {
                 var result = <LookAtResultWithPos[]>creep.room.lookAtArea(pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1, true);
 
                 var miners = result.filter((p) => {
-                    return p.type == "creep" && p.creep.memory.role == "miner"
+                    return p.type == "creep" && p.creep.my && p.creep.memory.role == "miner"
                 });
 
                 if (miners.length == 0) {

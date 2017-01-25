@@ -12,14 +12,22 @@ export function init() {
             Memory.spawnQueue = {};
 
         if (Memory.spawnQueue[roomName] === undefined) {
+
+            var sourcesCount = Game.rooms[roomName].find<Source>(FIND_SOURCES).length;
+
             Memory.spawnQueue[roomName] = [
                 getSpawnQueueTarget("citizen"),
                 getSpawnQueueTarget("citizen"),
-                getSpawnQueueTarget("citizen"),
-                getSpawnQueueTarget("miner"),
-                getSpawnQueueTarget("miner"),
-                getSpawnQueueTarget("citizen"),
+                getSpawnQueueTarget("citizen")
             ];
+
+            if(sourcesCount > 0)
+            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner"));
+            if(sourcesCount > 1)
+            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner"));
+
+            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen"));
+
         }
 
         if(!Game.flags[roomName]) {
@@ -61,7 +69,7 @@ export function spawnIfNecessary() {
                         if(!creepRoom)
                             creepRoom = roomName;
                         var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role,nextSpawnTarget.respawnAfterDeath ));
-                        console.log("Creating new creep : " + nextSpawnTarget);
+                        console.log("Creating new creep : " + nextSpawnTarget.role);
                         Memory.spawnQueue[roomName].shift();
                         Memory.creepCount += 1;
                     }
@@ -121,7 +129,7 @@ export function getPartCost(part: string) {
 export function respawnDeadCreeps() {
     for (var i in Memory.creeps) {
         if (!Game.creeps[i] && Memory.creeps[i].role != "claimer") {
-            addToSpawnQueue(Memory.creeps[i].role, true, Memory.creeps[i].roomName);
+            addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role), true, Memory.creeps[i].roomName);
             delete Memory.creeps[i];
         }
     }

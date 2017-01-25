@@ -42,10 +42,15 @@ export function onControllerLevelChanged(newLevel: number, room: Room)
     console.log("New controller level : " + newLevel);
 
     if (newLevel == 2) {
+
+        var sourcesCount = room.find<Source>(FIND_SOURCES).length;
+
         spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
-        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
-        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
-        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
+        if(sourcesCount > 1) {
+            spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
+            spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
+            spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);
+        }
     }
 
     for (var structureName in Memory.buildingUpgradeInfo) {
