@@ -66,19 +66,7 @@ function getMaxStructureNumber(struct, level, room) {
             return 0;
         else {
             var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-            var nbOfRampartsToBuild = 0;
-            for (var i = 0; i < towers.length; i++) {
-                var results = room.lookAt(towers[i].pos);
-                var hasRampart = false;
-                for (var j = 0; j < results.length; j++) {
-                    if (results[j].type == "structure" && results[j].structure.structureType == STRUCTURE_RAMPART) {
-                        hasRampart = true;
-                    }
-                }
-                if (!hasRampart) {
-                    nbOfRampartsToBuild = nbOfRampartsToBuild + 1;
-                }
-            }
+            var nbOfRampartsToBuild = room.find(FIND_MY_SPAWNS).length + towers.length;
             return nbOfRampartsToBuild;
         }
     }
@@ -134,6 +122,20 @@ function getPositionForStructure(struct, room) {
         }
     }
     if (struct == STRUCTURE_RAMPART) {
+        var spawns = room.find(FIND_MY_SPAWNS);
+        for (var i = 0; i < spawns.length; i++) {
+            var spawn = spawns[i];
+            var results = room.lookAt(spawn.pos);
+            var hasRampart = false;
+            for (var j = 0; j < results.length; j++) {
+                if (results[j].type == "structure" && results[j].structure.structureType == STRUCTURE_RAMPART) {
+                    hasRampart = true;
+                }
+            }
+            if (!hasRampart) {
+                return spawn.pos;
+            }
+        }
         var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
         for (var i = 0; i < towers.length; i++) {
             var results = room.lookAt(towers[i].pos);
