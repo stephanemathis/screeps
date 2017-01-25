@@ -12,6 +12,22 @@ export function tick()
 
         if (controllerLevel != Memory.controllerLevel[roomName])
             onControllerLevelChanged(controllerLevel, room);
+
+        var spawns = room.find(FIND_MY_SPAWNS);
+
+        if(spawns.length == 0 && room.controller.my)
+        {
+            var creeps = room.find(FIND_MY_CREEPS);
+            if(creeps.length == 0) {
+                console.log("Du renfort pour la salle " + roomName);
+                var spawn = spawner.getBiggestSpawn();
+
+                spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+                spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+                spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+            }
+
+        }
     }
 
     for(var flagName in Game.flags) {
@@ -41,15 +57,6 @@ export function onControllerLevelChanged(newLevel: number, room: Room)
     Memory.controllerLevel[room.name] = newLevel;
 
     console.log("New controller level : " + newLevel);
-
-    if(newLevel == 1)
-    {
-        var spawn = spawner.getBiggestSpawn();
-
-        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
-        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
-        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
-    }
 
     if (newLevel == 2) {
 
