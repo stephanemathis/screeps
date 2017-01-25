@@ -22,7 +22,7 @@ function createBuildingIfNecessary() {
 exports.createBuildingIfNecessary = createBuildingIfNecessary;
 function getNextStructure(room) {
     var controllerLevel = room.controller.level;
-    var structPriority = [STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_RAMPART, STRUCTURE_CONTAINER];
+    var structPriority = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_RAMPART, STRUCTURE_CONTAINER];
     for (var i = 0; i < structPriority.length; i++) {
         var struct = structPriority[i];
         var max = getMaxStructureNumber(struct, controllerLevel, room);
@@ -78,13 +78,23 @@ function getMaxStructureNumber(struct, level, room) {
             return sources.length;
         }
     }
+    if (struct == STRUCTURE_SPAWN) {
+        if (level < 1)
+            return 0;
+        else if (level < 7)
+            return 1;
+        else if (level < 8)
+            return 2;
+        else
+            return 3;
+    }
     return 0;
 }
 exports.getMaxStructureNumber = getMaxStructureNumber;
 function getPositionForStructure(struct, room) {
-    if (struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION) {
+    if (struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION || struct == STRUCTURE_SPAWN) {
         var startingPoint = null;
-        if (struct == STRUCTURE_TOWER) {
+        if (struct == STRUCTURE_TOWER || struct == STRUCTURE_SPAWN) {
             startingPoint = room.controller.pos;
         }
         else {

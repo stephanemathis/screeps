@@ -9,7 +9,8 @@ function tick() {
             onControllerLevelChanged(controllerLevel, room);
     }
     for (var flagName in Game.flags) {
-        if (flagName == "Conquest") {
+        var flag = Game.flags[flagName];
+        if (flagName == "Conquest" && !Game.flags[flag.pos.roomName]) {
             spawner.addClaimerIfNecessary();
         }
     }
@@ -29,6 +30,12 @@ exports.init = init;
 function onControllerLevelChanged(newLevel, room) {
     Memory.controllerLevel[room.name] = newLevel;
     console.log("New controller level : " + newLevel);
+    if (newLevel == 1) {
+        var spawn = spawner.getBiggestSpawn();
+        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+        spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+    }
     if (newLevel == 2) {
         var sourcesCount = room.find(FIND_SOURCES).length;
         spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen"), false, room.name);

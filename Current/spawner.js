@@ -80,8 +80,8 @@ function getParts(spawnTarget, spawn) {
         "citizenMaxParts": 16,
         "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
         "minerMaxParts": 10,
-        "claimer": [MOVE, CLAIM, MOVE, WORK],
-        "claimerMaxParts": 9999
+        "claimer": [MOVE, CLAIM],
+        "claimerMaxParts": 2
     };
     var availableParts = idealParts[spawnTarget.role];
     var parts = [];
@@ -120,22 +120,25 @@ function getPartCost(part) {
 exports.getPartCost = getPartCost;
 function respawnDeadCreeps() {
     for (var i in Memory.creeps) {
-        if (!Game.creeps[i] && Memory.creeps[i].role != "claimer") {
+        if (!Game.creeps[i] && Memory.creeps[i].respawnAfterDeath) {
             addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role), true, Memory.creeps[i].roomName);
             delete Memory.creeps[i];
         }
     }
 }
 exports.respawnDeadCreeps = respawnDeadCreeps;
-function addClaimerIfNecessary() {
+function getBiggestSpawn() {
     var targetSpawn = null;
     for (var spawnName in Game.spawns) {
         var spawn = Game.spawns[spawnName];
-        if (spawn.room.energyCapacityAvailable > (getPartCost(CLAIM) + getPartCost(MOVE))) {
-            if (!targetSpawn || targetSpawn.room.energyCapacityAvailable < spawn.room.energyCapacityAvailable)
-                targetSpawn = spawn;
-        }
+        if (!targetSpawn || targetSpawn.room.energyCapacityAvailable < spawn.room.energyCapacityAvailable)
+            targetSpawn = spawn;
     }
+    return targetSpawn;
+}
+exports.getBiggestSpawn = getBiggestSpawn;
+function addClaimerIfNecessary() {
+    var targetSpawn = getBiggestSpawn();
     if (targetSpawn != null) {
         if (Memory.spawnQueue[targetSpawn.room.name].filter(function (st) { return st.role == "claimer"; }).length == 0) {
             var nbOfclaimer = 0;

@@ -1,6 +1,7 @@
 import * as roleUpgrader from "./role.upgrader";
 import * as roleCitizen from "./role.citizen";
 import * as roleMiner from "./role.miner";
+import * as roleClaimer from "./role.claimer";
 import * as spawner from "./spawner";
 import * as building from "./building";
 import * as defender from "./defender";
@@ -29,5 +30,8 @@ export function loop() {
 
         if (creep.memory.role == 'miner')
             roleMiner.run(creep);
+
+        if (creep.memory.role == 'claimer')
+            roleClaimer.run(creep);
     }
 }

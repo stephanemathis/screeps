@@ -7,7 +7,7 @@ interface Memory {
 
 interface Creep {
     findAndPickEnergy(): void;
-    goToRoomIfNecessary(): void;
+    goToRoomIfNecessary(): boolean;
     memory: any | CreepMemory;
 }
 

@@ -2,6 +2,7 @@
 var roleUpgrader = require("./role.upgrader");
 var roleCitizen = require("./role.citizen");
 var roleMiner = require("./role.miner");
+var roleClaimer = require("./role.claimer");
 var spawner = require("./spawner");
 var building = require("./building");
 var defender = require("./defender");
@@ -21,6 +22,8 @@ function loop() {
             roleCitizen.run(creep);
         if (creep.memory.role == 'miner')
             roleMiner.run(creep);
+        if (creep.memory.role == 'claimer')
+            roleClaimer.run(creep);
     }
 }
 exports.loop = loop;
