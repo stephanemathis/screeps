@@ -62,7 +62,7 @@ function getMaxStructureNumber(struct, level, room) {
             return 6;
     }
     if (struct == STRUCTURE_RAMPART) {
-        if (level < 2)
+        if (level < 3)
             return 0;
         else {
             var towers = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
@@ -170,8 +170,12 @@ function getPositionForStructure(struct, room) {
             });
             if (numberOfContainer.length == 0) {
                 var path = room.findPath(room.controller.pos, sources[i].pos, { ignoreCreeps: true });
+                if (path.length == 0) {
+                    path = room.findPath(room.find(FIND_MY_SPAWNS)[0].pos, sources[i].pos, { ignoreCreeps: true });
+                }
                 var lastStep = path.length == 1 ? path[0] : path[path.length - 2];
-                return new RoomPosition(lastStep.x, lastStep.y, room.name);
+                if (lastStep)
+                    return new RoomPosition(lastStep.x, lastStep.y, room.name);
             }
         }
     }

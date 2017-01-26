@@ -12,15 +12,15 @@ function init() {
         if (Memory.spawnQueue[roomName] === undefined) {
             var sourcesCount = Game.rooms[roomName].find(FIND_SOURCES).length;
             Memory.spawnQueue[roomName] = [
-                getSpawnQueueTarget("citizen"),
-                getSpawnQueueTarget("citizen"),
-                getSpawnQueueTarget("citizen")
+                getSpawnQueueTarget("citizen", true),
+                getSpawnQueueTarget("citizen", true),
+                getSpawnQueueTarget("citizen", true)
             ];
             if (sourcesCount > 0)
-                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner"));
+                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
             if (sourcesCount > 1)
-                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner"));
-            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen"));
+                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
+            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen", true));
         }
         if (!Game.flags[roomName]) {
             Game.rooms[roomName].createFlag(25, 25, roomName);
@@ -121,7 +121,7 @@ exports.getPartCost = getPartCost;
 function respawnDeadCreeps() {
     for (var i in Memory.creeps) {
         if (!Game.creeps[i] && Memory.creeps[i].respawnAfterDeath) {
-            addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role), true, Memory.creeps[i].roomName);
+            addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role, true), true, Memory.creeps[i].roomName);
             delete Memory.creeps[i];
         }
     }
@@ -159,7 +159,7 @@ function getSpawnQueueTarget(role, respawnAfterDeath, roomName, maxParts) {
         role: role,
         roomName: roomName,
         maxParts: !!maxParts ? maxParts : 999,
-        respawnAfterDeath: respawnAfterDeath
+        respawnAfterDeath: respawnAfterDeath === undefined ? true : respawnAfterDeath
     };
 }
 exports.getSpawnQueueTarget = getSpawnQueueTarget;

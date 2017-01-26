@@ -12,7 +12,7 @@ export function tick()
 
         if (controllerLevel != Memory.controllerLevel[roomName])
             onControllerLevelChanged(controllerLevel, room);
-
+/*
         var spawns = room.find(FIND_MY_SPAWNS);
 
         if(spawns.length == 0 && room.controller.my)
@@ -27,7 +27,7 @@ export function tick()
                 spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
             }
 
-        }
+        }*/
     }
 
     for(var flagName in Game.flags) {

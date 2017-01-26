@@ -79,7 +79,7 @@ export function getMaxStructureNumber(struct: string, level: number, room: Room)
 
     if (struct == STRUCTURE_RAMPART) {
 
-        if (level < 2)
+        if (level < 3)
             return 0;
         else {
             var towers = room.find<Tower>(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
@@ -216,8 +216,12 @@ export function getPositionForStructure(struct: string, room: Room)
 
             if (numberOfContainer.length == 0) {
                 var path = room.findPath(room.controller.pos, sources[i].pos, {ignoreCreeps: true});
+                if(path.length == 0) {
+                    path = room.findPath(room.find<Spawn>(FIND_MY_SPAWNS)[0].pos, sources[i].pos, {ignoreCreeps: true});
+                }
                 var lastStep = path.length == 1 ? path[0] : path[path.length - 2];
-                return new RoomPosition(lastStep.x, lastStep.y, room.name);
+                if(lastStep)
+                    return new RoomPosition(lastStep.x, lastStep.y, room.name);
             }
         }
     }
