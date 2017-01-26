@@ -7,6 +7,28 @@ function tick() {
         var controllerLevel = room.controller.level;
         if (controllerLevel != Memory.controllerLevel[roomName])
             onControllerLevelChanged(controllerLevel, room);
+        var spawns = room.find(FIND_MY_SPAWNS);
+        if (spawns.length == 0 && room.controller.my) {
+            var creeps = room.find(FIND_MY_CREEPS);
+            if (creeps.length == 0) {
+                var spawn = spawner.getBiggestSpawn();
+                var isAlreadyInSpawn = Memory.spawnQueue[spawn.room.name].filter(function (t) { return t.roomName == roomName; }).length > 0;
+                var isAlreadyComing = false;
+                if (!isAlreadyComing) {
+                    for (var name in Game.creeps) {
+                        var creep = Game.creeps[name];
+                        if (creep.memory.roomName == roomName)
+                            isAlreadyComing = true;
+                    }
+                }
+                if (!isAlreadyInSpawn && !isAlreadyComing) {
+                    console.log("Du renfort pour la salle " + roomName);
+                    spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+                    spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+                    spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("citizen", false, room.name), false, spawn.room.name);
+                }
+            }
+        }
     }
     for (var flagName in Game.flags) {
         var flag = Game.flags[flagName];

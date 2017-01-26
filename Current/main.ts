@@ -34,4 +34,5 @@ export function loop() {
         if (creep.memory.role == 'claimer')
             roleClaimer.run(creep);
     }
+
 }
