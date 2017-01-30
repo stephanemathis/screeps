@@ -7,27 +7,29 @@ export function tick() {
 
 export function init() {
     for (var roomName in Game.rooms) {
+        var room = Game.rooms[roomName];
+        if(room.controller.my)
+        {
+            if(Memory.spawnQueue === undefined)
+                Memory.spawnQueue = {};
 
-        if(Memory.spawnQueue === undefined)
-            Memory.spawnQueue = {};
+            if (Memory.spawnQueue[roomName] === undefined) {
 
-        if (Memory.spawnQueue[roomName] === undefined) {
+                var sourcesCount = Game.rooms[roomName].find<Source>(FIND_SOURCES).length;
 
-            var sourcesCount = Game.rooms[roomName].find<Source>(FIND_SOURCES).length;
+                Memory.spawnQueue[roomName] = [
+                    getSpawnQueueTarget("citizen", true),
+                    getSpawnQueueTarget("citizen", true),
+                    getSpawnQueueTarget("citizen", true)
+                ];
 
-            Memory.spawnQueue[roomName] = [
-                getSpawnQueueTarget("citizen", true),
-                getSpawnQueueTarget("citizen", true),
-                getSpawnQueueTarget("citizen", true)
-            ];
+                if(sourcesCount > 0)
+                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
+                if(sourcesCount > 1)
+                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
 
-            if(sourcesCount > 0)
-            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
-            if(sourcesCount > 1)
-            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
-
-            Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen", true));
-
+                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen", true));
+            }
         }
 
         if(!Game.flags[roomName]) {

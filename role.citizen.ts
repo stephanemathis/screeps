@@ -52,11 +52,15 @@ export function run(creep: Creep) {
 
                                 var possibleStructure = structure;
 
-                                if (possibleStructure.hits == possibleStructure.hitsMax) {
+                                var maxHits = possibleStructure.hitsMax;
+                                if(maxHits > 30000000)
+                                    maxHits = 30000000; 
+
+                                if (possibleStructure.hits >= maxHits) {
                                     Memory.buildingUpgradeInfo[possibleStructure.id] = false;
                                 }
 
-                                if (possibleStructure.hits < possibleStructure.hitsMax * 0.5) {
+                                if (possibleStructure.hits < maxHits * 0.8) {
                                     Memory.buildingUpgradeInfo[possibleStructure.id] = true;
                                     return true;
                                 }
