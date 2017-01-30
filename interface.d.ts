@@ -3,6 +3,7 @@ interface Memory {
     buildingUpgradeInfo: {[buildingId: string]: boolean};
     creepCount: number;
     spawnQueue: {[roomName: string]: SpawnQueueTarget[]};
+    turnGoal: {[roomName: string]: TurnGoal};
 }
 
 interface Creep {
@@ -26,4 +27,9 @@ interface CreepMemory {
     targetSourceId?: string;
     dispatch?: boolean;
     upgrading?: boolean;
+}
+
+interface TurnGoal {
+    constructionSiteId?: string;
+    repairTargetId?: string;
 }

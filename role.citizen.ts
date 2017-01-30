@@ -1,90 +1,119 @@
 
 export function run(creep: Creep) {
 
-    if(!creep.goToRoomIfNecessary()) {
+    var turnConsumed = false;
+
+    turnConsumed = creep.goToRoomIfNecessary();
+
+    // On va chercher de l'énergie
+    if(!turnConsumed) {
         if (creep.carry.energy == creep.carryCapacity)
             creep.memory.dispatch = true;
         else if (!creep.carry.energy)
             creep.memory.dispatch = false;
 
         if (creep.memory.dispatch == false) {
-            // On va chercher de l'énergie
+
             creep.findAndPickEnergy();
+            turnConsumed = true;
         }
-        else {
-            if(creep.room.controller.ticksToDowngrade < 1000) {
-                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller);
-                }
+    }
+
+    // On upgrade le controller si bientot downgradé
+    if(!turnConsumed) {
+        if(creep.room.controller.ticksToDowngrade < 1000) {
+            if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(creep.room.controller);
             }
-            else {
-                // On cherche les structures qui ont besoin d'énergie (Spawn, Extension, ...)
-                var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
-                    }
-                });
+            turnConsumed = true;
+        }
+    }
 
-                if (targetsFillEnergy.length > 0) {
-                    if (creep.transfer(targetsFillEnergy[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetsFillEnergy[0]);
-                    }
-                }
-                else {
-                    // Sinon on cherche ce qu'il faut construire
-                    var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
+    // On cherche les structures qui ont besoin d'énergie (Spawn, Extension, ...)
+    if(!turnConsumed) {
+        var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
+            }
+        });
 
-                    if (targets.length) {
-                        if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(targets[0]);
-                        }
+        if (targetsFillEnergy.length > 0) {
+            if (creep.transfer(targetsFillEnergy[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(targetsFillEnergy[0]);
+            }
+            turnConsumed = true;
+        }  
+    }
+
+    // Sinon on cherche ce qu'il faut construire
+    if(!turnConsumed) {                           
+        if(Memory.turnGoal[creep.room.name].constructionSiteId === undefined) {
+            var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
+            if(targets.length) 
+                Memory.turnGoal[creep.room.name].constructionSiteId = targets[0].id;
+            else 
+                Memory.turnGoal[creep.room.name].constructionSiteId = null;
+        }
+
+        if (Memory.turnGoal[creep.room.name].constructionSiteId) {
+            var buildTarget = Game.getObjectById<ConstructionSite>(Memory.turnGoal[creep.room.name].constructionSiteId);
+            if (creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(buildTarget);
+            }
+            turnConsumed = true;
+        } 
+    }
+
+    // On cherche ce qu'on peut réparer
+    if(!turnConsumed) {
+        if(Memory.turnGoal[creep.room.name].repairTargetId === undefined) {
+            if (Memory.buildingUpgradeInfo === undefined)
+                Memory.buildingUpgradeInfo = {};
+
+            var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+
+                    if (structure.structureType != STRUCTURE_RAMPART)
+                        return false;
+
+                    var possibleStructure = structure;
+                    var maxHits = Math.min(possibleStructure.hitsMax, 30000000);
+
+                    if (possibleStructure.hits >= maxHits) {
+                        Memory.buildingUpgradeInfo[possibleStructure.id] = false;
+                    }
+
+                    if (possibleStructure.hits < maxHits * 0.8) {
+                        Memory.buildingUpgradeInfo[possibleStructure.id] = true;
+                        return true;
                     }
                     else {
-
-                        if (Memory.buildingUpgradeInfo === undefined)
-                            Memory.buildingUpgradeInfo = {};
-
-                        var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_STRUCTURES, {
-                            filter: (structure) => {
-
-                                if (structure.structureType != STRUCTURE_RAMPART)
-                                    return false;
-
-                                var possibleStructure = structure;
-
-                                var maxHits = possibleStructure.hitsMax;
-                                if(maxHits > 30000000)
-                                    maxHits = 30000000; 
-
-                                if (possibleStructure.hits >= maxHits) {
-                                    Memory.buildingUpgradeInfo[possibleStructure.id] = false;
-                                }
-
-                                if (possibleStructure.hits < maxHits * 0.8) {
-                                    Memory.buildingUpgradeInfo[possibleStructure.id] = true;
-                                    return true;
-                                }
-                                else {
-                                    return !!Memory.buildingUpgradeInfo[possibleStructure.id];
-                                }
-                            }
-                        });
-
-                        if (repairTargets.length > 0) {
-                            if (creep.repair(repairTargets[0]) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(repairTargets[0]);
-                            }
-                        }
-                        else {
-                            //Et sinon on update le controller
-                            if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.controller);
-                            }
-                        }
-
+                        return !!Memory.buildingUpgradeInfo[possibleStructure.id];
                     }
                 }
+            });
+
+            if(repairTargets.length) {
+                Memory.turnGoal[creep.room.name].repairTargetId = repairTargets[0].id;
+            } else {
+                Memory.turnGoal[creep.room.name].repairTargetId = null;
             }
+        }                        
+
+        if(Memory.turnGoal[creep.room.name].repairTargetId) {
+            var repairTarget = Game.getObjectById<Structure>(Memory.turnGoal[creep.room.name].repairTargetId);
+            if (creep.repair(repairTarget) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(repairTarget);
+            }
+            turnConsumed = true;
         }
+    }
+
+    // Sinon on upgrade simplement le controller
+    if(!turnConsumed) {
+        if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(creep.room.controller);
+        }
+        turnConsumed = true;
     }
 }
