@@ -2,7 +2,7 @@
 export function tick() {
     for (var roomName in Game.rooms) {
         var room = Game.rooms[roomName];
-        var hostiles = <Creep[]>Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
+        var hostiles = room.find<Creep>(FIND_HOSTILE_CREEPS);
 
         if (hostiles.length > 0) {
 
@@ -19,9 +19,26 @@ export function tick() {
             if (username != "Invader") {
                 Game.notify(`User ${username} spotted in room ${roomName}`);
             }
+
             var towers = <Tower[]>room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
 
-            towers.forEach(tower => tower.attack(hostiles[0]));
+            for(var i = 0 ; i < towers.length ; i++) {
+                var tower = towers[i];
+                var closestEnemyCreep = tower.pos.findClosestByRange(hostiles);
+                tower.attack(closestEnemyCreep);
+            }
+        }
+        else {
+            var structures = room.find<Structure>(FIND_STRUCTURES);
+            
+            var roads = structures.filter(s => { return s.structureType == STRUCTURE_ROAD && s.hits < s.hitsMax * 0.8; });
+            
+            if(roads.length > 0) {
+                var towers = <Tower[]>room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+                towers.forEach(tower => {
+                    tower.repair(roads[0]);
+                });
+            }
         }
     }
 }
