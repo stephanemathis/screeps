@@ -1,6 +1,6 @@
 
 export function run(creep: Creep) {
-    if(!creep.goToRoomIfNecessary()) {
+    if (!creep.goToRoomIfNecessary()) {
         if (creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
         }
@@ -9,8 +9,10 @@ export function run(creep: Creep) {
         }
 
         if (creep.memory.upgrading) {
-            if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller);
+            if (creep.room.controller && creep.room.controller.my) {
+                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.controller);
+                }
             }
         }
         else {

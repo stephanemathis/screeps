@@ -1,5 +1,5 @@
 export function run(creep: Creep) {
-    if(!creep.goToRoomIfNecessary()) {
+    if (!creep.goToRoomIfNecessary()) {
         if (!creep.memory.targetSourceId) {
             var sources = <Source[]>creep.room.find(FIND_SOURCES);//var sources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
             for (var i = 0; i < sources.length; i++) {
@@ -33,7 +33,7 @@ export function run(creep: Creep) {
 
         var actionConsumed = false;
 
-        if (res.length == 0 || res.filter((s) => {return s.structureType == STRUCTURE_CONTAINER}).length == 0) {
+        if (res.length == 0 || res.filter((s) => { return s.structureType == STRUCTURE_CONTAINER }).length == 0) {
 
             if (source != null) {
                 var pos = source.pos;

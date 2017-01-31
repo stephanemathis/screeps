@@ -6,7 +6,7 @@ export function run(creep: Creep) {
     turnConsumed = creep.goToRoomIfNecessary();
 
     // On va chercher de l'énergie
-    if(!turnConsumed) {
+    if (!turnConsumed) {
         if (creep.carry.energy == creep.carryCapacity)
             creep.memory.dispatch = true;
         else if (!creep.carry.energy)
@@ -20,8 +20,8 @@ export function run(creep: Creep) {
     }
 
     // On upgrade le controller si bientot downgradé
-    if(!turnConsumed) {
-        if(creep.room.controller.ticksToDowngrade < 1000) {
+    if (!turnConsumed) {
+        if (creep.room.controller && creep.room.controller.my && creep.room.controller.ticksToDowngrade < 1000) {
             if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller);
             }
@@ -30,7 +30,7 @@ export function run(creep: Creep) {
     }
 
     // On cherche les structures qui ont besoin d'énergie (Spawn, Extension, ...)
-    if(!turnConsumed) {
+    if (!turnConsumed) {
         var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
@@ -42,16 +42,16 @@ export function run(creep: Creep) {
                 creep.moveTo(targetsFillEnergy[0]);
             }
             turnConsumed = true;
-        }  
+        }
     }
 
     // Sinon on cherche ce qu'il faut construire
-    if(!turnConsumed) {                           
-        if(Memory.turnGoal[creep.room.name].constructionSiteId === undefined) {
+    if (!turnConsumed) {
+        if (Memory.turnGoal[creep.room.name].constructionSiteId === undefined) {
             var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
-            if(targets.length) 
+            if (targets.length)
                 Memory.turnGoal[creep.room.name].constructionSiteId = targets[0].id;
-            else 
+            else
                 Memory.turnGoal[creep.room.name].constructionSiteId = null;
         }
 
@@ -61,12 +61,12 @@ export function run(creep: Creep) {
                 creep.moveTo(buildTarget);
             }
             turnConsumed = true;
-        } 
+        }
     }
 
     // On cherche ce qu'on peut réparer
-    if(!turnConsumed) {
-        if(Memory.turnGoal[creep.room.name].repairTargetId === undefined) {
+    if (!turnConsumed) {
+        if (Memory.turnGoal[creep.room.name].repairTargetId === undefined) {
             if (Memory.buildingUpgradeInfo === undefined)
                 Memory.buildingUpgradeInfo = {};
 
@@ -93,14 +93,14 @@ export function run(creep: Creep) {
                 }
             });
 
-            if(repairTargets.length) {
+            if (repairTargets.length) {
                 Memory.turnGoal[creep.room.name].repairTargetId = repairTargets[0].id;
             } else {
                 Memory.turnGoal[creep.room.name].repairTargetId = null;
             }
-        }                        
+        }
 
-        if(Memory.turnGoal[creep.room.name].repairTargetId) {
+        if (Memory.turnGoal[creep.room.name].repairTargetId) {
             var repairTarget = Game.getObjectById<Structure>(Memory.turnGoal[creep.room.name].repairTargetId);
             if (creep.repair(repairTarget) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(repairTarget);
@@ -110,10 +110,12 @@ export function run(creep: Creep) {
     }
 
     // Sinon on upgrade simplement le controller
-    if(!turnConsumed) {
-        if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(creep.room.controller);
+    if (!turnConsumed) {
+        if (creep.room.controller && creep.room.controller.my) {
+            if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(creep.room.controller);
+            }
+            turnConsumed = true;
         }
-        turnConsumed = true;
     }
 }

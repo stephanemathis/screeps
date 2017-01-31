@@ -1,32 +1,31 @@
 
-export function tick()
-{
+export function tick() {
     createBuildingIfNecessary();
 }
 
-export function createBuildingIfNecessary()
-{
+export function createBuildingIfNecessary() {
     for (var roomName in Game.rooms) {
         var room = Game.rooms[roomName];
-        var targets = room.find(FIND_CONSTRUCTION_SITES);
+        if (room.controller && room.controller.my) {
+            var targets = room.find(FIND_CONSTRUCTION_SITES);
 
-        if (!targets.length) {
-            var nextStructure = getNextStructure(room);
+            if (!targets.length) {
+                var nextStructure = getNextStructure(room);
 
-            if (nextStructure !== null) {
-                var position = getPositionForStructure(nextStructure, room);
+                if (nextStructure !== null) {
+                    var position = getPositionForStructure(nextStructure, room);
 
-                if (position !== null) {
-                    console.log("Creating building : " + nextStructure + " (" + position.x + "-" + position.y + ")");
-                    room.createConstructionSite(position.x, position.y, nextStructure);
+                    if (position !== null) {
+                        console.log("Creating building : " + nextStructure + " (" + position.x + "-" + position.y + ")");
+                        room.createConstructionSite(position.x, position.y, nextStructure);
+                    }
                 }
             }
         }
     }
 }
 
-export function getNextStructure(room: Room)
-{
+export function getNextStructure(room: Room) {
     var controllerLevel = room.controller.level;
 
     var structPriority = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_RAMPART, STRUCTURE_CONTAINER];
@@ -44,18 +43,16 @@ export function getNextStructure(room: Room)
     return null;
 }
 
-export function countExistingStructures(struct: string, room: Room)
-{
+export function countExistingStructures(struct: string, room: Room) {
     var result = room.find(FIND_MY_STRUCTURES, {
-        filter: {structureType: struct}
+        filter: { structureType: struct }
     });
 
     return result.length;
 }
 
 //Voir pour le nombre max d'objet par level : http://support.screeps.com/hc/en-us/articles/203086021-Global-control
-export function getMaxStructureNumber(struct: string, level: number, room: Room)
-{
+export function getMaxStructureNumber(struct: string, level: number, room: Room) {
     if (struct == STRUCTURE_EXTENSION) {
         if (level < 2)
             return 0;
@@ -82,7 +79,7 @@ export function getMaxStructureNumber(struct: string, level: number, room: Room)
         if (level < 3)
             return 0;
         else {
-            var towers = room.find<Tower>(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+            var towers = room.find<Tower>(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
             var nbOfRampartsToBuild = room.find(FIND_MY_SPAWNS).length + towers.length;
             return nbOfRampartsToBuild;
         }
@@ -98,12 +95,12 @@ export function getMaxStructureNumber(struct: string, level: number, room: Room)
     }
 
 
-    if(struct == STRUCTURE_SPAWN) {
-        if(level < 1)
+    if (struct == STRUCTURE_SPAWN) {
+        if (level < 1)
             return 0;
-        else if(level < 7)
+        else if (level < 7)
             return 1;
-        else if(level < 8)
+        else if (level < 8)
             return 2;
         else
             return 3;
@@ -112,8 +109,7 @@ export function getMaxStructureNumber(struct: string, level: number, room: Room)
     return 0;
 }
 
-export function getPositionForStructure(struct: string, room: Room)
-{
+export function getPositionForStructure(struct: string, room: Room) {
     if (struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION || struct == STRUCTURE_SPAWN) {
         var startingPoint = null;
 
@@ -121,7 +117,7 @@ export function getPositionForStructure(struct: string, room: Room)
             startingPoint = room.controller.pos;
         }
         else {
-            var spawns = room.find<Spawn>(FIND_MY_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN});
+            var spawns = room.find<Spawn>(FIND_MY_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_SPAWN });
             startingPoint = spawns[0].pos;
         }
 
@@ -170,7 +166,7 @@ export function getPositionForStructure(struct: string, room: Room)
 
         var spawns = room.find<Spawn>(FIND_MY_SPAWNS);
 
-        for(var i = 0 ; i < spawns.length; i++) {
+        for (var i = 0; i < spawns.length; i++) {
             var spawn = spawns[i];
             var results = room.lookAt(spawn.pos);
 
@@ -185,7 +181,7 @@ export function getPositionForStructure(struct: string, room: Room)
             }
         }
 
-        var towers = room.find<Tower>(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        var towers = room.find<Tower>(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
 
         for (var i = 0; i < towers.length; i++) {
             var results = room.lookAt(towers[i].pos);
@@ -215,12 +211,12 @@ export function getPositionForStructure(struct: string, room: Room)
             });
 
             if (numberOfContainer.length == 0) {
-                var path = room.findPath(room.controller.pos, sources[i].pos, {ignoreCreeps: true});
-                if(path.length == 0) {
-                    path = room.findPath(room.find<Spawn>(FIND_MY_SPAWNS)[0].pos, sources[i].pos, {ignoreCreeps: true});
+                var path = room.findPath(room.controller.pos, sources[i].pos, { ignoreCreeps: true });
+                if (path.length == 0) {
+                    path = room.findPath(room.find<Spawn>(FIND_MY_SPAWNS)[0].pos, sources[i].pos, { ignoreCreeps: true });
                 }
                 var lastStep = path.length == 1 ? path[0] : path[path.length - 2];
-                if(lastStep)
+                if (lastStep)
                     return new RoomPosition(lastStep.x, lastStep.y, room.name);
             }
         }

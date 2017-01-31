@@ -7,14 +7,14 @@ export function tick() {
 
     for (var roomName in Game.rooms) {
         var room = Game.rooms[roomName];
-        var controllerLevel = room.controller.level;
+        var controllerLevel = room.controller ? room.controller.level : 0;
 
         if (controllerLevel != Memory.controllerLevel[roomName])
             onControllerLevelChanged(controllerLevel, room);
 
         var spawns = room.find(FIND_MY_SPAWNS);
 
-        if (spawns.length == 0 && room.controller.my) {
+        if (spawns.length == 0 && room.controller && room.controller.my) {
             var creeps = room.find(FIND_MY_CREEPS);
             if (creeps.length == 0) {
 
@@ -56,7 +56,8 @@ export function init() {
         Memory.buildingUpgradeInfo = {};
 
     for (var roomName in Game.rooms) {
-        if (Memory.controllerLevel[roomName] === undefined)
+
+        if (Memory.controllerLevel[roomName] === undefined && Game.rooms[roomName].controller && Game.rooms[roomName].controller.my)
             Memory.controllerLevel[roomName] = Game.rooms[roomName].controller.level;
     }
 }

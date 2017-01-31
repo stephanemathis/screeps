@@ -19,7 +19,7 @@ export function loop() {
     defender.tick();
 
     Memory.turnGoal = {};
-    for(var roomName in Game.rooms) {
+    for (var roomName in Game.rooms) {
         Memory.turnGoal[roomName] = {};
     }
 
@@ -37,6 +37,6 @@ export function loop() {
             roleMiner.run(creep);
 
         if (creep.memory.role == 'claimer')
-            roleClaimer.run(creep);           
+            roleClaimer.run(creep);
     }
 }

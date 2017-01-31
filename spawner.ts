@@ -8,9 +8,8 @@ export function tick() {
 export function init() {
     for (var roomName in Game.rooms) {
         var room = Game.rooms[roomName];
-        if(room.controller.my)
-        {
-            if(Memory.spawnQueue === undefined)
+        if (room.controller && room.controller.my) {
+            if (Memory.spawnQueue === undefined)
                 Memory.spawnQueue = {};
 
             if (Memory.spawnQueue[roomName] === undefined) {
@@ -23,16 +22,16 @@ export function init() {
                     getSpawnQueueTarget("citizen", true)
                 ];
 
-                if(sourcesCount > 0)
-                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
-                if(sourcesCount > 1)
-                Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
+                if (sourcesCount > 0)
+                    Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
+                if (sourcesCount > 1)
+                    Memory.spawnQueue[roomName].push(getSpawnQueueTarget("miner", true));
 
                 Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen", true));
             }
         }
 
-        if(!Game.flags[roomName]) {
+        if (!Game.flags[roomName]) {
             Game.rooms[roomName].createFlag(25, 25, roomName);
         }
     }
@@ -56,7 +55,7 @@ export function spawnIfNecessary() {
         if (spawn.spawning == null) {
             var roomName = spawn.room.name;
             var roomSpawnQueue = Memory.spawnQueue[roomName];
-            if (roomSpawnQueue.length > 0) {
+            if (roomSpawnQueue && roomSpawnQueue.length > 0) {
                 var nextSpawnTarget = roomSpawnQueue[0];
                 if (!nextSpawnTarget) {
                     roomSpawnQueue.shift();
@@ -68,9 +67,9 @@ export function spawnIfNecessary() {
                     var spawnReslt = spawn.canCreateCreep(parts);
                     if (spawnReslt === 0) {
                         var creepRoom = nextSpawnTarget.roomName;
-                        if(!creepRoom)
+                        if (!creepRoom)
                             creepRoom = roomName;
-                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role,nextSpawnTarget.respawnAfterDeath ));
+                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role, nextSpawnTarget.respawnAfterDeath));
                         console.log("Creating new creep : " + nextSpawnTarget.role);
                         Memory.spawnQueue[roomName].shift();
                         Memory.creepCount += 1;
@@ -151,16 +150,16 @@ export function addClaimerIfNecessary() {
     var targetSpawn = getBiggestSpawn();
 
     if (targetSpawn != null) {
-        if (Memory.spawnQueue[targetSpawn.room.name].filter(st => {return st.role == "claimer"}).length == 0) {
+        if (Memory.spawnQueue[targetSpawn.room.name].filter(st => { return st.role == "claimer" }).length == 0) {
             var nbOfclaimer = 0;
-            for(var creepName in Game.creeps) {
+            for (var creepName in Game.creeps) {
                 var creep = Game.creeps[creepName];
-                if(creep.memory.role == "claimer")
+                if (creep.memory.role == "claimer")
                     nbOfclaimer = nbOfclaimer + 1;
             }
 
-            if(nbOfclaimer == 0)
-            addToSpawnQueue(getSpawnQueueTarget("claimer", false), false, targetSpawn.room.name);
+            if (nbOfclaimer == 0)
+                addToSpawnQueue(getSpawnQueueTarget("claimer", false), false, targetSpawn.room.name);
         }
     }
 }
