@@ -129,8 +129,9 @@ export function getPartCost(part: string) {
 
 export function respawnDeadCreeps() {
     for (var i in Memory.creeps) {
-        if (!Game.creeps[i] && Memory.creeps[i].respawnAfterDeath) {
-            addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role, true), true, Memory.creeps[i].roomName);
+        if (!Game.creeps[i]) {
+            if(Memory.creeps[i].respawnAfterDeath)
+                addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role, true), true, Memory.creeps[i].roomName);
             delete Memory.creeps[i];
         }
     }

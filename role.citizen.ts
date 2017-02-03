@@ -2,8 +2,7 @@
 export function run(creep: Creep) {
 
     var turnConsumed = false;
-    var roomName = creep.room.name;
-    var turnGoal = turnGoal;
+    var turnGoal = Memory.turnGoal[creep.room.name];
 
     turnConsumed = creep.goToRoomIfNecessary();
 
