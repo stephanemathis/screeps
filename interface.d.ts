@@ -4,6 +4,7 @@ interface Memory {
     creepCount: number;
     spawnQueue: {[roomName: string]: SpawnQueueTarget[]};
     turnGoal: {[roomName: string]: TurnGoal};
+    roomGoal: {[roomName: string]: RoomGoal};
 }
 
 interface Creep {
@@ -33,4 +34,9 @@ interface TurnGoal {
     constructionSiteId?: string;
     repairTargetId?: string;
     fillEnergyTargetId?: string;
+    energyContainerTargetId?: string;
+}
+
+interface RoomGoal {
+    energyContainerTargetId?: string;
 }

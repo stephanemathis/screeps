@@ -19,8 +19,15 @@ export function loop() {
     defender.tick();
 
     Memory.turnGoal = {};
+
+    if(Memory.roomGoal === undefined)
+        Memory.roomGoal = {};
+
     for (var roomName in Game.rooms) {
         Memory.turnGoal[roomName] = {};
+
+        if(Memory.roomGoal[roomName] === undefined)
+            Memory.roomGoal[roomName] = {};
     }
 
     for (var name in Game.creeps) {
