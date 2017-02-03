@@ -10,7 +10,7 @@ import * as eventsManager from "./events";
 import * as proto from "./prototype.creep";
 
 export function loop() {
-
+//Memory.spawnQueue["W71N19"].push(require("spawner").getSpawnQueueTarget("citizen", true))
     proto.run();
 
     eventsManager.tick();
