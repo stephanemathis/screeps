@@ -81,26 +81,29 @@ export function run(creep: Creep) {
         if (turnGoal.repairTargetId === undefined) {
             if (Memory.buildingUpgradeInfo === undefined)
                 Memory.buildingUpgradeInfo = {};
+                
+            var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_MY_STRUCTURES, {
+                filter: (structure: Structure) => {
 
-            var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-
-                    if (structure.structureType != STRUCTURE_RAMPART)
+                    if (structure.structureType != STRUCTURE_RAMPART) {
                         return false;
-
-                    var possibleStructure = structure;
-                    var maxHits = Math.min(possibleStructure.hitsMax, 30000000);
-
-                    if (possibleStructure.hits >= maxHits) {
-                        Memory.buildingUpgradeInfo[possibleStructure.id] = false;
-                    }
-
-                    if (possibleStructure.hits < maxHits * 0.8) {
-                        Memory.buildingUpgradeInfo[possibleStructure.id] = true;
-                        return true;
                     }
                     else {
-                        return !!Memory.buildingUpgradeInfo[possibleStructure.id];
+                        var possibleStructure = structure;
+                        
+                        var maxHits = Math.min(possibleStructure.hitsMax, 30000000);
+
+                        if (possibleStructure.hits >= maxHits) {
+                            Memory.buildingUpgradeInfo[possibleStructure.id] = false;
+                        }
+
+                        if (possibleStructure.hits < maxHits * 0.8) {
+                            Memory.buildingUpgradeInfo[possibleStructure.id] = true;
+                            return true;
+                        }
+                        else {
+                            return !!Memory.buildingUpgradeInfo[possibleStructure.id];
+                        }
                     }
                 }
             });
