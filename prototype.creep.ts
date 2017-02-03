@@ -6,13 +6,20 @@ export function run() {
         if (needMoreEnergy) {
             var containersWithEnergy = creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => i.structureType == STRUCTURE_CONTAINER && i.store[RESOURCE_ENERGY] > 0
-            }).sort((i, j) => { return j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY] });
+            }).sort((i, j) => { 
+                var energyDiff = j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY];
+                if(energyDiff > 1000)
+                    return j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY];
+                else return 0;
+            });
 
             if (containersWithEnergy && containersWithEnergy.length > 0) {
-                var withdrawResult = creep.withdraw(containersWithEnergy[0], RESOURCE_ENERGY);
+
+                var containerIndex = 0;
+                var withdrawResult = creep.withdraw(containersWithEnergy[containerIndex], RESOURCE_ENERGY);
 
                 if (withdrawResult == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(containersWithEnergy[0]);
+                    creep.moveTo(containersWithEnergy[containerIndex]);
                     needMoreEnergy = false;
                 }
 

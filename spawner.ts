@@ -136,18 +136,18 @@ export function respawnDeadCreeps() {
     }
 }
 
-export function getBiggestSpawn(): Spawn {
-    var targetSpawn = null;
+export function getBiggestSpawn(roomNameToIgnore: string): Spawn {
+    var targetSpawn: Spawn = null;
     for (var spawnName in Game.spawns) {
         var spawn = Game.spawns[spawnName];
-        if (!targetSpawn || targetSpawn.room.energyCapacityAvailable < spawn.room.energyCapacityAvailable)
+        if (roomNameToIgnore != spawn.room.name && Game.rooms[spawn.room.name].find(FIND_MY_CREEPS).length && (!targetSpawn || targetSpawn.room.energyCapacityAvailable < spawn.room.energyCapacityAvailable))
             targetSpawn = spawn;
     }
     return targetSpawn;
 }
 
-export function addClaimerIfNecessary() {
-    var targetSpawn = getBiggestSpawn();
+export function addClaimerIfNecessary(roomNameToIgnore: string) {
+    var targetSpawn = getBiggestSpawn(roomNameToIgnore);
 
     if (targetSpawn != null) {
         if (Memory.spawnQueue[targetSpawn.room.name].filter(st => { return st.role == "claimer" }).length == 0) {
