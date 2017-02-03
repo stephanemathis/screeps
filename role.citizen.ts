@@ -2,6 +2,8 @@
 export function run(creep: Creep) {
 
     var turnConsumed = false;
+    var roomName = creep.room.name;
+    var turnGoal = turnGoal;
 
     turnConsumed = creep.goToRoomIfNecessary();
 
@@ -31,15 +33,26 @@ export function run(creep: Creep) {
 
     // On cherche les structures qui ont besoin d'énergie (Spawn, Extension, ...)
     if (!turnConsumed) {
-        var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
-            }
-        });
+        if(turnGoal.fillEnergyTargetId === undefined) {
+            var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
+                }
+            });
 
-        if (targetsFillEnergy.length > 0) {
-            if (creep.transfer(targetsFillEnergy[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targetsFillEnergy[0]);
+            if(targetsFillEnergy.length > 0) {
+                turnGoal.fillEnergyTargetId = targetsFillEnergy[0].id;
+            } 
+            else {
+                turnGoal.fillEnergyTargetId = null;
+            }
+        }
+
+        if(turnGoal.fillEnergyTargetId) {
+            var fillEnergyTarget = Game.getObjectById<Structure>(turnGoal.fillEnergyTargetId);
+
+            if(creep.transfer(fillEnergyTarget, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(fillEnergyTarget);
             }
             turnConsumed = true;
         }
@@ -47,16 +60,16 @@ export function run(creep: Creep) {
 
     // Sinon on cherche ce qu'il faut construire
     if (!turnConsumed) {
-        if (Memory.turnGoal[creep.room.name].constructionSiteId === undefined) {
+        if (turnGoal.constructionSiteId === undefined) {
             var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length)
-                Memory.turnGoal[creep.room.name].constructionSiteId = targets[0].id;
+                turnGoal.constructionSiteId = targets[0].id;
             else
-                Memory.turnGoal[creep.room.name].constructionSiteId = null;
+                turnGoal.constructionSiteId = null;
         }
 
-        if (Memory.turnGoal[creep.room.name].constructionSiteId) {
-            var buildTarget = Game.getObjectById<ConstructionSite>(Memory.turnGoal[creep.room.name].constructionSiteId);
+        if (turnGoal.constructionSiteId) {
+            var buildTarget = Game.getObjectById<ConstructionSite>(turnGoal.constructionSiteId);
             if (creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(buildTarget);
             }
@@ -66,7 +79,7 @@ export function run(creep: Creep) {
 
     // On cherche ce qu'on peut réparer
     if (!turnConsumed) {
-        if (Memory.turnGoal[creep.room.name].repairTargetId === undefined) {
+        if (turnGoal.repairTargetId === undefined) {
             if (Memory.buildingUpgradeInfo === undefined)
                 Memory.buildingUpgradeInfo = {};
 
@@ -94,14 +107,14 @@ export function run(creep: Creep) {
             });
 
             if (repairTargets.length) {
-                Memory.turnGoal[creep.room.name].repairTargetId = repairTargets[0].id;
+                turnGoal.repairTargetId = repairTargets[0].id;
             } else {
-                Memory.turnGoal[creep.room.name].repairTargetId = null;
+                turnGoal.repairTargetId = null;
             }
         }
 
-        if (Memory.turnGoal[creep.room.name].repairTargetId) {
-            var repairTarget = Game.getObjectById<Structure>(Memory.turnGoal[creep.room.name].repairTargetId);
+        if (turnGoal.repairTargetId) {
+            var repairTarget = Game.getObjectById<Structure>(turnGoal.repairTargetId);
             if (creep.repair(repairTarget) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(repairTarget);
             }

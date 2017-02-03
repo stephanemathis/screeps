@@ -32,4 +32,5 @@ interface CreepMemory {
 interface TurnGoal {
     constructionSiteId?: string;
     repairTargetId?: string;
+    fillEnergyTargetId?: string;
 }
