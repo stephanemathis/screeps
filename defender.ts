@@ -32,7 +32,7 @@ export function tick() {
             else {
                 var structures = room.find<Structure>(FIND_STRUCTURES);
 
-                var roads = structures.filter(s => { return s.structureType == STRUCTURE_ROAD && s.hits < s.hitsMax * 0.8; });
+                var roads = structures.filter(s => { return (s.structureType == STRUCTURE_ROAD) && s.hits < s.hitsMax * 0.8; });
 
                 if (roads.length > 0) {
                     var towers = <Tower[]>room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });

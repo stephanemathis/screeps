@@ -12,12 +12,9 @@ export function tick() {
         if (controllerLevel != Memory.controllerLevel[roomName])
             onControllerLevelChanged(controllerLevel, room);
 
-        var spawns = room.find(FIND_MY_SPAWNS);
-
-        if (spawns.length == 0 && room.controller && room.controller.my) {
+        if (room.controller && room.controller.my) {
             var creeps = room.find(FIND_MY_CREEPS);
             if (creeps.length == 0) {
-
                 var spawn = spawner.getBiggestSpawn(roomName);
 
                 if(spawn != null) {
