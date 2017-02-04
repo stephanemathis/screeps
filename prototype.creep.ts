@@ -12,7 +12,8 @@ export function run() {
                 // On vérifie qu'il y a encore de l'énergie
                 if(currentRoomContainerId) {
                     var container = Game.getObjectById<Container>(currentRoomContainerId);
-                    if(container.store[RESOURCE_ENERGY] < 100) {
+
+                    if(!container || container.store[RESOURCE_ENERGY] < 100) {
                         currentRoomContainerId = null;
                         Memory.roomGoal[creep.room.name].energyContainerTargetId = undefined;
                     }
@@ -40,15 +41,19 @@ export function run() {
 
                 var container = Game.getObjectById<Container>(Memory.turnGoal[creep.room.name].energyContainerTargetId);
 
-                var withdrawResult = creep.withdraw(container, RESOURCE_ENERGY);
+                if(!container) {
+                    Memory.roomGoal[creep.room.name].energyContainerTargetId = null;
+                } else {
+                    var withdrawResult = creep.withdraw(container, RESOURCE_ENERGY);
 
-                if (withdrawResult == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(container);
-                    needMoreEnergy = false;
+                    if (withdrawResult == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(container);
+                        needMoreEnergy = false;
+                    }
+
+                    if (withdrawResult == OK)
+                        needMoreEnergy = false;
                 }
-
-                if (withdrawResult == OK)
-                    needMoreEnergy = false;
             }
 
 
