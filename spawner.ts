@@ -55,13 +55,16 @@ export function spawnIfNecessary() {
         if (spawn.spawning == null) {
             var roomName = spawn.room.name;
             var roomSpawnQueue = Memory.spawnQueue[roomName];
+
             if (roomSpawnQueue && roomSpawnQueue.length > 0) {
                 var nextSpawnTarget = roomSpawnQueue[0];
+
                 if (!nextSpawnTarget) {
                     roomSpawnQueue.shift();
                     if (roomSpawnQueue.length > 0)
                         nextSpawnTarget = roomSpawnQueue[0];
                 }
+
                 if (nextSpawnTarget) {
                     var parts = getParts(nextSpawnTarget, spawn);
                     var spawnReslt = spawn.canCreateCreep(parts);
@@ -69,7 +72,7 @@ export function spawnIfNecessary() {
                         var creepRoom = nextSpawnTarget.roomName;
                         if (!creepRoom)
                             creepRoom = roomName;
-                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role, nextSpawnTarget.respawnAfterDeath));
+                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role, nextSpawnTarget.respawnAfterDeath, nextSpawnTarget.secondaryRole));
                         console.log("Creating new creep : " + nextSpawnTarget.role);
                         Memory.spawnQueue[roomName].shift();
                         Memory.creepCount += 1;
@@ -90,18 +93,24 @@ export function getParts(spawnTarget: SpawnQueueTarget, spawn: Spawn): string[] 
         "miner": [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, MOVE, WORK, MOVE],
         "minerMaxParts": 10,
         "claimer": [MOVE, CLAIM],
-        "claimerMaxParts": 2
+        "claimerMaxParts": 2,
+        "squadattacker": [MOVE, ATTACK],
+        "squadattackerMaxParts": 50,
+        "squadhealer": [MOVE, HEAL],
+        "squadhealerMaxParts": 50
     };
-    var availableParts = idealParts[spawnTarget.role];
+    var availableParts = idealParts[spawnTarget.role+(spawnTarget.secondaryRole ? spawnTarget.secondaryRole : "")];
     var parts = [];
     var hasEnoughenergy = true;
     var index = 0;
     var totalEnergy = 0;
+    var maxNbParts = Math.min(idealParts[spawnTarget.role+(spawnTarget.secondaryRole ? spawnTarget.secondaryRole : "") + "MaxParts"], spawnTarget.maxParts);
+
     while (hasEnoughenergy) {
         var nextPart = availableParts[index % availableParts.length];
         var cost = getPartCost(nextPart);
         var totalCost = cost + totalEnergy;
-        if (totalCost > maxEnergy || parts.length >= idealParts[spawnTarget.role + "MaxParts"]) {
+        if (totalCost > maxEnergy || parts.length >= maxNbParts) {
             hasEnoughenergy = false;
         }
         else {
@@ -110,6 +119,7 @@ export function getParts(spawnTarget: SpawnQueueTarget, spawn: Spawn): string[] 
             index = index + 1;
         }
     }
+
     return parts;
 }
 
@@ -165,19 +175,21 @@ export function addClaimerIfNecessary(roomNameToIgnore: string) {
     }
 }
 
-export function getSpawnQueueTarget(role: string, respawnAfterDeath = true, roomName?: string, maxParts?: number): SpawnQueueTarget {
+export function getSpawnQueueTarget(role: string, respawnAfterDeath = true, roomName?: string, maxParts?: number, secondaryRole?: string): SpawnQueueTarget {
     return {
         role: role,
         roomName: roomName,
-        maxParts: !!maxParts ? maxParts : 999,
-        respawnAfterDeath: respawnAfterDeath === undefined ? true : respawnAfterDeath
+        maxParts: !!maxParts ? maxParts : 50,
+        respawnAfterDeath: respawnAfterDeath === undefined ? true : respawnAfterDeath,
+        secondaryRole: secondaryRole
     };
 }
 
-export function getCreepMemory(roomName: string, role: string, respawnAfterDeath: boolean): CreepMemory {
+export function getCreepMemory(roomName: string, role: string, respawnAfterDeath: boolean, secondaryRole: string): CreepMemory {
     return {
         roomName: roomName,
         role: role,
-        respawnAfterDeath: respawnAfterDeath
+        respawnAfterDeath: respawnAfterDeath,
+        secondaryRole: secondaryRole
     };
 }

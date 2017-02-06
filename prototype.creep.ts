@@ -5,43 +5,43 @@ export function run() {
 
         if (needMoreEnergy) {
 
-            if(Memory.turnGoal[creep.room.name].energyContainerTargetId === undefined) {
+            if (Memory.turnGoal[creep.room.name].energyContainerTargetId === undefined) {
 
                 var currentRoomContainerId = Memory.roomGoal[creep.room.name].energyContainerTargetId;
 
                 // On vérifie qu'il y a encore de l'énergie
-                if(currentRoomContainerId) {
+                if (currentRoomContainerId) {
                     var container = Game.getObjectById<Container>(currentRoomContainerId);
 
-                    if(!container || container.store[RESOURCE_ENERGY] < 100) {
+                    if (!container || container.store[RESOURCE_ENERGY] < 100) {
                         currentRoomContainerId = null;
                         Memory.roomGoal[creep.room.name].energyContainerTargetId = undefined;
                     }
                 }
 
                 // Sinon on cherche un autre container
-                if(!currentRoomContainerId) {
-                   var containersWithEnergy = creep.room.find<Container>(FIND_STRUCTURES, {
+                if (!currentRoomContainerId) {
+                    var containersWithEnergy = creep.room.find<Container>(FIND_STRUCTURES, {
                         filter: (i) => i.structureType == STRUCTURE_CONTAINER && i.store[RESOURCE_ENERGY] > 0
                     }).sort((i, j) => { return j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY]; });
 
-                    if(containersWithEnergy.length && containersWithEnergy[0].store[RESOURCE_ENERGY] > 100) {
+                    if (containersWithEnergy.length && containersWithEnergy[0].store[RESOURCE_ENERGY] > 100) {
                         currentRoomContainerId = containersWithEnergy[0].id;
                         Memory.roomGoal[creep.room.name].energyContainerTargetId = currentRoomContainerId;
-                        console.log("Salle " + creep.room.name + "/" +  currentRoomContainerId);
+                        console.log("Salle " + creep.room.name + "/" + currentRoomContainerId);
                     }
                 }
 
-                if(currentRoomContainerId) {
+                if (currentRoomContainerId) {
                     Memory.turnGoal[creep.room.name].energyContainerTargetId = currentRoomContainerId;
                 }
             }
 
-            if(Memory.turnGoal[creep.room.name].energyContainerTargetId) {
+            if (Memory.turnGoal[creep.room.name].energyContainerTargetId) {
 
                 var container = Game.getObjectById<Container>(Memory.turnGoal[creep.room.name].energyContainerTargetId);
 
-                if(!container) {
+                if (!container) {
                     Memory.roomGoal[creep.room.name].energyContainerTargetId = null;
                 } else {
                     var withdrawResult = creep.withdraw(container, RESOURCE_ENERGY);
@@ -55,30 +55,6 @@ export function run() {
                         needMoreEnergy = false;
                 }
             }
-
-
-            /*var containersWithEnergy = creep.room.find(FIND_STRUCTURES, {
-                filter: (i) => i.structureType == STRUCTURE_CONTAINER && i.store[RESOURCE_ENERGY] > 0
-            }).sort((i, j) => { 
-                var energyDiff = j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY];
-                if(energyDiff > 1000)
-                    return j.store[RESOURCE_ENERGY] - i.store[RESOURCE_ENERGY];
-                else return 0;
-            });
-
-            if (containersWithEnergy && containersWithEnergy.length > 0) {
-
-                var containerIndex = 0;
-                var withdrawResult = creep.withdraw(containersWithEnergy[containerIndex], RESOURCE_ENERGY);
-
-                if (withdrawResult == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(containersWithEnergy[containerIndex]);
-                    needMoreEnergy = false;
-                }
-
-                if (withdrawResult == OK)
-                    needMoreEnergy = false;
-            }*/
         }
 
         if (needMoreEnergy) {
@@ -107,10 +83,10 @@ export function run() {
     };
 
     Creep.prototype.goToRoomIfNecessary = function () {
-        var creep = this;
+        var creep: Creep = this;
 
         if (creep.memory.roomName != creep.room.name) {
-            creep.moveTo(Game.flags[creep.memory.roomName]);
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.roomName));
             return true;
         }
 

@@ -5,6 +5,7 @@ interface Memory {
     spawnQueue: {[roomName: string]: SpawnQueueTarget[]};
     turnGoal: {[roomName: string]: TurnGoal};
     roomGoal: {[roomName: string]: RoomGoal};
+    attackStep: number;
 }
 
 interface Creep {
@@ -18,11 +19,13 @@ interface SpawnQueueTarget {
     roomName: string;
     maxParts: number;
     respawnAfterDeath: boolean;
+    secondaryRole: string;
 }
 
 interface CreepMemory {
     roomName: string;
     role: string;
+    secondaryRole: string;
     respawnAfterDeath: boolean;
 
     targetSourceId?: string;

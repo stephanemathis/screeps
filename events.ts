@@ -1,17 +1,17 @@
 import * as spawner from "./spawner";
 
-
-
 export function tick() {
     init();
 
     for (var roomName in Game.rooms) {
         var room = Game.rooms[roomName];
-        var controllerLevel = room.controller ? room.controller.level : 0;
 
+        // On regarde si le niveau du controller a changé
+        var controllerLevel = room.controller ? room.controller.level : 0;
         if (controllerLevel != Memory.controllerLevel[roomName])
             onControllerLevelChanged(controllerLevel, room);
 
+        // On parcours les salle pour voir s'il y a besoin de renfort
         if (room.controller && room.controller.my) {
             var creeps = room.find(FIND_MY_CREEPS);
             if (creeps.length == 0) {
@@ -39,10 +39,27 @@ export function tick() {
         }
     }
 
+
     for (var flagName in Game.flags) {
         var flag = Game.flags[flagName];
+
+        // On detecte s'il y a un ordre de conquerir une salle
         if (flagName == "Conquest" && !Game.flags[flag.pos.roomName]) {
             spawner.addClaimerIfNecessary(flag.pos.roomName);
+        }
+
+        // On detecte s'il y a un ordre d'attaquer une salle
+        if(flagName == "Attack") {
+            var spawn = spawner.getBiggestSpawn(roomName);
+            spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("squad", false, flag.pos.roomName, null, "attacker"), false, spawn.room.name);
+            spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("squad", false, flag.pos.roomName, null, "healer"), false, spawn.room.name);
+            spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("squad", false, flag.pos.roomName, null, "healer"), false, spawn.room.name);
+
+            flag.remove();
+            
+            if(Memory.attackStep === undefined)
+                Memory.attackStep = 0;
+            console.log("Starting attack on room " + flag.pos.roomName);
         }
     }
 }
