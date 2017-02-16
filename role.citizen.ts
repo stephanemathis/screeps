@@ -91,7 +91,7 @@ export function run(creep: Creep) {
                     else {
                         var possibleStructure = structure;
                         
-                        var maxHits = Math.min(possibleStructure.hitsMax, 30000000);
+                        var maxHits = Math.min(possibleStructure.hitsMax, 3000000);
 
                         if (possibleStructure.hits >= maxHits) {
                             Memory.buildingUpgradeInfo[possibleStructure.id] = false;

@@ -49,7 +49,7 @@ export function loop() {
             squadCreeps.push(creep);
     }
 
-    squad.tick(squadCreeps, building);
+    squad.tick(squadCreeps);
 
 
 }

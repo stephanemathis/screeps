@@ -4,9 +4,6 @@ import * as building from "./building";
 // Step 1 : Restaurer les creeps pour qu'ils partent avec de la vie
 // Step 2 : Attaquer
 
-            //BUG car le temps que ça respawn, pendant un tour !!!
-
-
 export function tick(creeps: Creep[]) {
 
     // Si pas de step, alors c'est qu'on ne désire pas attaquer
@@ -33,7 +30,7 @@ export function tick(creeps: Creep[]) {
     }
 
     // On attend que l'équipe spawn
-    if (Memory.attackStep == 0) {
+    if (Memory.attackStep < 1) {
 
         var stillSpawning = false;
         for (var roomName in Game.rooms) {
@@ -43,7 +40,7 @@ export function tick(creeps: Creep[]) {
         if (!stillSpawning) {
             for (var spawnName in Game.spawns) {
                 var currentlySpawning = Game.spawns[spawnName].spawning;
-                console.log(JSON.stringify(currentlySpawning));
+
                 stillSpawning = stillSpawning || (currentlySpawning && Memory.creeps[currentlySpawning.name].role == "squad");
             }
         }
@@ -57,8 +54,8 @@ export function tick(creeps: Creep[]) {
         }
         else {
             // Si plus rien n'est en attente, alors on peut passer à l'étape suivante
-            console.log("Attaque : Passage à l'étape 1");
-            Memory.attackStep = 1;
+            Memory.attackStep += 0.1;
+            console.log("Attaque : Passage à l'étape 1, on attend un peu (" + Memory.attackStep + ")");
             return;
         }
     }
@@ -68,7 +65,7 @@ export function tick(creeps: Creep[]) {
         var creepNeedRenewing = false;
         for (var i = 0; i < creeps.length; i++) {
             var creep = creeps[i];
-            if (creep.ticksToLive < 1450) {
+            if (creep.ticksToLive < 1480) {
                 creepNeedRenewing = creepNeedRenewing || true;
 
                 var spawner = creep.room.find<Spawn>(FIND_MY_SPAWNS).sort((sa, sb) => {
@@ -97,32 +94,39 @@ export function tick(creeps: Creep[]) {
 
         for (var i = 0; i < attackers.length; i++) {
             var creep = creeps[i];
-            var moved = creep.goToRoomIfNecessary();
 
-            if (!moved) {
-                var spawn = creep.room.find<Spawn>(FIND_HOSTILE_SPAWNS);
-                if (spawn && spawn.length) {
-                    if (creep.attack(spawn[0])) {
-                        creep.moveTo(spawn[0]);
-                    }
-                }
-                else {
-                    var enemyCreeps = creep.room.find<Creep>(FIND_HOSTILE_CREEPS).sort((ca, cb) => {
-                        if (ca.name < cb.name) return -1;
-                        if (ca.name > cb.name) return 1;
-                        return 0;
-                    });
-                    if (enemyCreeps && enemyCreeps.length) {
-                        if (creep.attack(enemyCreeps[0])) {
-                            creep.moveTo(enemyCreeps[0]);
+            var nearHealer = creep.pos.findInRange<Creep>(FIND_MY_CREEPS, 1);
+
+            var healerCount = nearHealer.filter(c => { return c.memory.secondaryRole == "healer" }).length;
+
+            if (healerCount != 0) {
+                var moved = creep.goToRoomIfNecessary();
+
+                if (!moved) {
+                    var spawn = creep.room.find<Spawn>(FIND_HOSTILE_SPAWNS);
+                    if (spawn && spawn.length) {
+                        if (creep.attack(spawn[0])) {
+                            creep.moveTo(spawn[0]);
                         }
                     }
                     else {
-                        var enemyStructure = creep.room.find<Structure>(FIND_HOSTILE_STRUCTURES).filter((s) => { return s.structureType != STRUCTURE_CONTROLLER });
-                        if (enemyStructure && enemyStructure.length) {
+                        var enemyCreeps = creep.room.find<Creep>(FIND_HOSTILE_CREEPS).sort((ca, cb) => {
+                            if (ca.name < cb.name) return -1;
+                            if (ca.name > cb.name) return 1;
+                            return 0;
+                        });
+                        if (enemyCreeps && enemyCreeps.length) {
+                            if (creep.attack(enemyCreeps[0])) {
+                                creep.moveTo(enemyCreeps[0]);
+                            }
+                        }
+                        else {
+                            var enemyStructure = creep.room.find<Structure>(FIND_HOSTILE_STRUCTURES).filter((s) => { return s.structureType != STRUCTURE_CONTROLLER });
+                            if (enemyStructure && enemyStructure.length) {
 
-                            if (creep.attack(enemyStructure[0])) {
-                                creep.moveTo(enemyStructure[0]);
+                                if (creep.attack(enemyStructure[0])) {
+                                    creep.moveTo(enemyStructure[0]);
+                                }
                             }
                         }
                     }

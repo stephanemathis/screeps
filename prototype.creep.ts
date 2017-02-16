@@ -76,8 +76,11 @@ export function run() {
             var energySources = creep.room.find<Source>(FIND_SOURCES);//sources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
             var targetSource = energySources[0];
             //targetSource = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-            if (creep.harvest(targetSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targetSource);
+            var harvestResult = creep.harvest(targetSource);
+            //console.log("harvest" + harvestResult);
+            if (harvestResult == ERR_NOT_IN_RANGE) {
+                var moveResult = creep.moveTo(targetSource);
+                //console.log("move" + moveResult);
             }
         }
     };
