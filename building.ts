@@ -106,30 +106,43 @@ export function getMaxStructureNumber(struct: string, level: number, room: Room)
             return 3;
     }
 
+    if (struct == STRUCTURE_STORAGE) {
+        if (level < 4)
+            return 0;
+        else return 1;
+    }
+
+    if (struct == STRUCTURE_POWER_SPAWN) {
+        if (level < 8)
+            return 0;
+        else return 1;
+    }
+
     return 0;
 }
 
 export function getPositionForStructure(struct: string, room: Room) {
     if (struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION || struct == STRUCTURE_SPAWN) {
-        var startingPoint = null;
 
-        if (struct == STRUCTURE_TOWER || struct == STRUCTURE_SPAWN) {
-            startingPoint = room.controller.pos;
-        }
-        else {
-            var spawns = room.find<Spawn>(FIND_MY_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_SPAWN });
-            startingPoint = spawns[0].pos;
-        }
+        var startingPoint = room.controller.pos;
+        var distanceFromCenter = 1;
+        var reservedSpot = 0;
+        if (struct == STRUCTURE_EXTENSION) {
+            reservedSpot += 1; // Pour un link
+            var structs = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE, STRUCTURE_POWER_SPAWN];
 
-        var distance = 1;
+            for (var s in structs) {
+                reservedSpot += getMaxStructureNumber(s, 8, room) - countExistingStructures(s, room);
+            }
+        }
 
         var search = true;
 
         while (search) {
-            var top = startingPoint.y - (distance);
-            var bottom = startingPoint.y + (distance);
-            var left = startingPoint.x - (distance);
-            var right = startingPoint.x + (distance);
+            var top = startingPoint.y - (distanceFromCenter);
+            var bottom = startingPoint.y + (distanceFromCenter);
+            var left = startingPoint.x - (distanceFromCenter);
+            var right = startingPoint.x + (distanceFromCenter);
 
             if (top < 5)
                 top = 5;
@@ -147,18 +160,24 @@ export function getPositionForStructure(struct: string, room: Room) {
 
             for (var y = top; y <= bottom; y++) {
                 for (var x = left; x <= right; x++) {
+
                     if ((x + y) % 2 == 1) {
                         var objectsOnPosition = result[y][x];
 
                         if (objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall") {
-                            search = false;
-                            return new RoomPosition(x, y, room.name);
+
+                            reservedSpot--;
+                            console.log("Spot" + reservedSpot);
+                            if (reservedSpot <= 0 && (struct != STRUCTURE_EXTENSION || distanceFromCenter > 3)) {
+                                search = false;
+                                return new RoomPosition(x, y, room.name);
+                            }
                         }
                     }
                 }
             }
 
-            distance++;
+            distanceFromCenter++;
         }
     }
 
