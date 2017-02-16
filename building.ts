@@ -134,6 +134,7 @@ export function getPositionForStructure(struct: string, room: Room) {
             for (var s in structs) {
                 reservedSpot += getMaxStructureNumber(s, 8, room) - countExistingStructures(s, room);
             }
+
         }
 
         var search = true;
@@ -167,8 +168,8 @@ export function getPositionForStructure(struct: string, room: Room) {
                         if (objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall") {
 
                             reservedSpot--;
-                            console.log("Spot" + reservedSpot);
-                            if (reservedSpot <= 0 && (struct != STRUCTURE_EXTENSION || distanceFromCenter > 3)) {
+
+                            if (reservedSpot <= 0 && (struct != STRUCTURE_EXTENSION || (Math.abs(room.controller.pos.x - x) > 3  && Math.abs(room.controller.pos.y - y) > 3))) {
                                 search = false;
                                 return new RoomPosition(x, y, room.name);
                             }
