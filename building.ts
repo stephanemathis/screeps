@@ -122,20 +122,72 @@ export function getMaxStructureNumber(struct: string, level: number, room: Room)
 }
 
 export function getPositionForStructure(struct: string, room: Room) {
-    if (struct == STRUCTURE_TOWER || struct == STRUCTURE_EXTENSION || struct == STRUCTURE_SPAWN) {
+    if (struct == STRUCTURE_EXTENSION) {
 
         var startingPoint = room.controller.pos;
         var distanceFromCenter = 1;
-        var reservedSpot = 0;
-        if (struct == STRUCTURE_EXTENSION) {
-            reservedSpot += 1; // Pour un link
-            var structs = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE, STRUCTURE_POWER_SPAWN];
+        var reservedSpot = 1; // Pour le link
 
-            for (var s in structs) {
-                reservedSpot += getMaxStructureNumber(s, 8, room) - countExistingStructures(s, room);
+        var structs = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE, STRUCTURE_POWER_SPAWN];
+
+        for (var i = 0; i < structs.length; i++) {
+            reservedSpot += getMaxStructureNumber(structs[i], 8, room) - countExistingStructures(structs[i], room);
+        }
+
+        var search = true;
+
+        while (search) {
+            var top = startingPoint.y - (distanceFromCenter);
+            var bottom = startingPoint.y + (distanceFromCenter);
+            var left = startingPoint.x - (distanceFromCenter);
+            var right = startingPoint.x + (distanceFromCenter);
+
+            if (top < 5)
+                top = 5;
+
+            if (left < 5)
+                left = 5;
+
+            if (bottom > 45)
+                bottom = 45;
+
+            if (right > 45)
+                right = 45;
+
+            var allZoneResult = room.lookAtArea(top, left, bottom, right, false);
+
+            for (var yLoop in allZoneResult) {
+                for (var xLoop in allZoneResult[yLoop]) {
+                    var x = parseInt(xLoop);
+                    var y = parseInt(yLoop);
+                    // On recherche uniquement sur l'extérieur du cadre, car l'intérieur est déjà vérifié aux itérations précédentes
+                    if (x == left || x == right || y == top || y == bottom) {
+                        // On place seulement sur les cases impaires pour laisser de la place entre les extensions
+                        if ((x + y) % 2 == 1) {
+                            var objectsOnPos = <LookAtResultWithPos[]>allZoneResult[y][x];
+                            if (objectsOnPos.length == 1) {
+                                var object = objectsOnPos[0];
+                                if (object.type == "terrain" && object.terrain !== "wall") {
+                                    // Cette case est libre, on regarde si on a assez d'emplacement réservé et assez loin du controleur
+                                    if (reservedSpot <= 0 && ((Math.abs(room.controller.pos.x - x) > 3 || Math.abs(room.controller.pos.y - y) > 3))) {
+                                        return new RoomPosition(x, y, room.name);
+                                    }
+                                    reservedSpot--;
+                                }
+                            }
+                        }
+
+                    }
+                }
             }
 
+            distanceFromCenter++;
         }
+    }
+
+    if (struct == STRUCTURE_TOWER || struct == STRUCTURE_SPAWN) {
+        var startingPoint = room.controller.pos;
+        var distanceFromCenter = 1;
 
         var search = true;
 
@@ -166,13 +218,8 @@ export function getPositionForStructure(struct: string, room: Room) {
                         var objectsOnPosition = result[y][x];
 
                         if (objectsOnPosition.length === 1 && objectsOnPosition[0].type == "terrain" && objectsOnPosition[0].terrain !== "wall") {
-
-                            reservedSpot--;
-
-                            if (reservedSpot <= 0 && (struct != STRUCTURE_EXTENSION || (Math.abs(room.controller.pos.x - x) > 3  && Math.abs(room.controller.pos.y - y) > 3))) {
-                                search = false;
-                                return new RoomPosition(x, y, room.name);
-                            }
+                            search = false;
+                            return new RoomPosition(x, y, room.name);
                         }
                     }
                 }
