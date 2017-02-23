@@ -55,6 +55,9 @@ export function tick(creeps: Creep[]) {
         else {
             // Si plus rien n'est en attente, alors on peut passer à l'étape suivante
             Memory.attackStep += 0.1;
+
+            if (Memory.attackStep > 1)
+                Memory.attackStep = 1;
             console.log("Attaque : Passage à l'étape 1, on attend un peu (" + Memory.attackStep + ")");
             return;
         }
