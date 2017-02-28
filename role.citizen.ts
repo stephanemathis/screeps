@@ -32,45 +32,26 @@ export function run(creep: Creep) {
 
     // On cherche les structures qui ont besoin d'énergie (Spawn, Extension, ...)
     if (!turnConsumed) {
-        if(turnGoal.fillEnergyTargetId === undefined) {
+        if (turnGoal.fillEnergyTargetId === undefined) {
             var targetsFillEnergy = <Structure[]>creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
                 }
             });
 
-            if(targetsFillEnergy.length > 0) {
+            if (targetsFillEnergy.length > 0) {
                 turnGoal.fillEnergyTargetId = targetsFillEnergy[0].id;
-            } 
+            }
             else {
                 turnGoal.fillEnergyTargetId = null;
             }
         }
 
-        if(turnGoal.fillEnergyTargetId) {
+        if (turnGoal.fillEnergyTargetId) {
             var fillEnergyTarget = Game.getObjectById<Structure>(turnGoal.fillEnergyTargetId);
 
-            if(creep.transfer(fillEnergyTarget, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            if (creep.transfer(fillEnergyTarget, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(fillEnergyTarget);
-            }
-            turnConsumed = true;
-        }
-    }
-
-    // Sinon on cherche ce qu'il faut construire
-    if (!turnConsumed) {
-        if (turnGoal.constructionSiteId === undefined) {
-            var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
-            if (targets.length)
-                turnGoal.constructionSiteId = targets[0].id;
-            else
-                turnGoal.constructionSiteId = null;
-        }
-
-        if (turnGoal.constructionSiteId) {
-            var buildTarget = Game.getObjectById<ConstructionSite>(turnGoal.constructionSiteId);
-            if (creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(buildTarget);
             }
             turnConsumed = true;
         }
@@ -81,7 +62,7 @@ export function run(creep: Creep) {
         if (turnGoal.repairTargetId === undefined) {
             if (Memory.buildingUpgradeInfo === undefined)
                 Memory.buildingUpgradeInfo = {};
-                
+
             var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure: Structure) => {
 
@@ -90,8 +71,8 @@ export function run(creep: Creep) {
                     }
                     else {
                         var possibleStructure = structure;
-                        
-                        var maxHits = Math.min(possibleStructure.hitsMax, 300000);
+
+                        var maxHits = Math.min(possibleStructure.hitsMax, 200000);
 
                         if (possibleStructure.hits >= maxHits) {
                             Memory.buildingUpgradeInfo[possibleStructure.id] = false;
@@ -119,6 +100,25 @@ export function run(creep: Creep) {
             var repairTarget = Game.getObjectById<Structure>(turnGoal.repairTargetId);
             if (creep.repair(repairTarget) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(repairTarget);
+            }
+            turnConsumed = true;
+        }
+    }
+
+    // Sinon on cherche ce qu'il faut construire
+    if (!turnConsumed) {
+        if (turnGoal.constructionSiteId === undefined) {
+            var targets = <ConstructionSite[]>creep.room.find(FIND_CONSTRUCTION_SITES);
+            if (targets.length)
+                turnGoal.constructionSiteId = targets[0].id;
+            else
+                turnGoal.constructionSiteId = null;
+        }
+
+        if (turnGoal.constructionSiteId) {
+            var buildTarget = Game.getObjectById<ConstructionSite>(turnGoal.constructionSiteId);
+            if (creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(buildTarget);
             }
             turnConsumed = true;
         }
