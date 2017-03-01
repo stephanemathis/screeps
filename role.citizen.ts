@@ -63,6 +63,8 @@ export function run(creep: Creep) {
             if (Memory.buildingUpgradeInfo === undefined)
                 Memory.buildingUpgradeInfo = {};
 
+            var maxHits = getRampartMaxHits(creep.room);
+
             var repairTargets = <Spawn[] | Structure[]>creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure: Structure) => {
 
@@ -71,8 +73,6 @@ export function run(creep: Creep) {
                     }
                     else {
                         var possibleStructure = structure;
-
-                        var maxHits = Math.min(possibleStructure.hitsMax, 200000);
 
                         if (possibleStructure.hits >= maxHits) {
                             Memory.buildingUpgradeInfo[possibleStructure.id] = false;
@@ -133,4 +133,19 @@ export function run(creep: Creep) {
             turnConsumed = true;
         }
     }
+}
+
+export function getRampartMaxHits(room: Room): number {
+    if (room.controller && room.controller.my) {
+        var level = room.controller.level;
+
+        if (level < 5)
+            return 50000;
+        else if (level < 7)
+            return 300000;
+        else if (level < 8)
+            return 1000000;
+    }
+    else
+        return 0;
 }
