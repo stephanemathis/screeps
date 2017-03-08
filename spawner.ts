@@ -46,37 +46,50 @@ export function addToSpawnQueue(spawnTarget: SpawnQueueTarget, front: boolean, s
 }
 
 export function spawnIfNecessary() {
-    for (var spawnName in Game.spawns) {
-        var spawn = Game.spawns[spawnName];
-        if (spawn.spawning == null) {
-            var roomName = spawn.room.name;
-            var roomSpawnQueue = Memory.spawnQueue[roomName];
 
-            if (roomSpawnQueue && roomSpawnQueue.length > 0) {
-                var nextSpawnTarget = roomSpawnQueue[0];
+    for (var roomName in Game.rooms) {
+        var spawns = Game.rooms[roomName].find<Spawn>(FIND_MY_SPAWNS);
 
-                if (!nextSpawnTarget) {
-                    roomSpawnQueue.shift();
-                    if (roomSpawnQueue.length > 0)
-                        nextSpawnTarget = roomSpawnQueue[0];
-                }
+        for (var i = 0; i < spawns.length; i++) {
+            var spawn = spawns[i];
 
-                if (nextSpawnTarget) {
-                    var parts = getParts(nextSpawnTarget, spawn);
-                    var spawnReslt = spawn.canCreateCreep(parts);
-                    if (spawnReslt === 0) {
-                        var creepRoom = nextSpawnTarget.roomName;
-                        if (!creepRoom)
-                            creepRoom = roomName;
-                        var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role, nextSpawnTarget.respawnAfterDeath, nextSpawnTarget.secondaryRole));
-                        console.log("Creating new creep : " + nextSpawnTarget.role);
-                        Memory.spawnQueue[roomName].shift();
-                        Memory.creepCount += 1;
+            if (spawn.spawning == null) {
+                var roomName = spawn.room.name;
+                var roomSpawnQueue = Memory.spawnQueue[roomName];
+
+                if (roomSpawnQueue && roomSpawnQueue.length > 0) {
+                    var nextSpawnTarget = roomSpawnQueue[0];
+
+                    if (!nextSpawnTarget) {
+                        roomSpawnQueue.shift();
+                        if (roomSpawnQueue.length > 0)
+                            nextSpawnTarget = roomSpawnQueue[0];
+                    }
+
+                    if (nextSpawnTarget) {
+                        var parts = getParts(nextSpawnTarget, spawn);
+                        var spawnReslt = spawn.canCreateCreep(parts);
+                        if (spawnReslt === 0) {
+                            var creepRoom = nextSpawnTarget.roomName;
+                            if (!creepRoom)
+                                creepRoom = roomName;
+                            var result = spawn.createCreep(parts, nextSpawnTarget.role + " " + Memory.creepCount, getCreepMemory(creepRoom, nextSpawnTarget.role, nextSpawnTarget.respawnAfterDeath, nextSpawnTarget.secondaryRole));
+                            console.log("Creating new creep : " + nextSpawnTarget.role);
+                            Memory.spawnQueue[roomName].shift();
+                            Memory.creepCount += 1;
+                            // Break pour seulement spawner une fois par tour, car l'énergie n'est pas consommée tout de suite
+                            break;
+                        }
                     }
                 }
             }
         }
     }
+
+
+
+
+
 }
 
 export function getParts(spawnTarget: SpawnQueueTarget, spawn: Spawn): string[] {
@@ -95,12 +108,12 @@ export function getParts(spawnTarget: SpawnQueueTarget, spawn: Spawn): string[] 
         "squadhealer": [MOVE, HEAL],
         "squadhealerMaxParts": 50
     };
-    var availableParts = idealParts[spawnTarget.role+(spawnTarget.secondaryRole ? spawnTarget.secondaryRole : "")];
+    var availableParts = idealParts[spawnTarget.role + (spawnTarget.secondaryRole ? spawnTarget.secondaryRole : "")];
     var parts = [];
     var hasEnoughenergy = true;
     var index = 0;
     var totalEnergy = 0;
-    var maxNbParts = Math.min(idealParts[spawnTarget.role+(spawnTarget.secondaryRole ? spawnTarget.secondaryRole : "") + "MaxParts"], spawnTarget.maxParts);
+    var maxNbParts = Math.min(idealParts[spawnTarget.role + (spawnTarget.secondaryRole ? spawnTarget.secondaryRole : "") + "MaxParts"], spawnTarget.maxParts);
 
     while (hasEnoughenergy) {
         var nextPart = availableParts[index % availableParts.length];
@@ -136,7 +149,7 @@ export function getPartCost(part: string) {
 export function respawnDeadCreeps() {
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
-            if(Memory.creeps[i].respawnAfterDeath)
+            if (Memory.creeps[i].respawnAfterDeath)
                 addToSpawnQueue(getSpawnQueueTarget(Memory.creeps[i].role, true), true, Memory.creeps[i].roomName);
             delete Memory.creeps[i];
         }

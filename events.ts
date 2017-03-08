@@ -46,6 +46,7 @@ export function tick() {
         // On detecte s'il y a un ordre de conquerir une salle
         if (flagName == "Conquest" && !Game.flags[flag.pos.roomName]) {
             spawner.addClaimerIfNecessary(flag.pos.roomName);
+            
             flag.remove();
             console.log("Starting claim on room " + flag.pos.roomName);
         }
