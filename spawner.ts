@@ -30,10 +30,6 @@ export function init() {
                 Memory.spawnQueue[roomName].push(getSpawnQueueTarget("citizen", true));
             }
         }
-
-        if (!Game.flags[roomName]) {
-            Game.rooms[roomName].createFlag(25, 25, roomName);
-        }
     }
     if (Memory.creepCount === undefined) {
         Memory.creepCount = 0;
@@ -170,7 +166,7 @@ export function addClaimerIfNecessary(roomNameToIgnore: string) {
             }
 
             if (nbOfclaimer == 0)
-                addToSpawnQueue(getSpawnQueueTarget("claimer", false), false, targetSpawn.room.name);
+                addToSpawnQueue(getSpawnQueueTarget("claimer", false, roomNameToIgnore), false, targetSpawn.room.name);
         }
     }
 }

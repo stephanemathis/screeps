@@ -17,7 +17,7 @@ export function tick() {
             if (creeps.length == 0) {
                 var spawn = spawner.getBiggestSpawn(roomName);
 
-                if(spawn != null) {
+                if (spawn != null) {
                     var isAlreadyInSpawn = Memory.spawnQueue[spawn.room.name].filter(t => { return t.roomName == roomName; }).length > 0;
                     var isAlreadyComing = false;
                     if (!isAlreadyComing) {
@@ -46,18 +46,20 @@ export function tick() {
         // On detecte s'il y a un ordre de conquerir une salle
         if (flagName == "Conquest" && !Game.flags[flag.pos.roomName]) {
             spawner.addClaimerIfNecessary(flag.pos.roomName);
+            flag.remove();
+            console.log("Starting claim on room " + flag.pos.roomName);
         }
 
         // On detecte s'il y a un ordre d'attaquer une salle
-        if(flagName == "Attack") {
+        if (flagName == "Attack") {
             var spawn = spawner.getBiggestSpawn(roomName);
             spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("squad", false, flag.pos.roomName, null, "attacker"), false, spawn.room.name);
             spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("squad", false, flag.pos.roomName, null, "healer"), false, spawn.room.name);
             spawner.addToSpawnQueue(spawner.getSpawnQueueTarget("squad", false, flag.pos.roomName, null, "healer"), false, spawn.room.name);
 
             flag.remove();
-            
-            if(Memory.attackStep === undefined)
+
+            if (Memory.attackStep === undefined)
                 Memory.attackStep = 0;
             console.log("Starting attack on room " + flag.pos.roomName);
         }
