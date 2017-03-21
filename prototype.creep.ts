@@ -1,7 +1,30 @@
 export function run() {
     Creep.prototype.findAndPickEnergy = function () {
-        var creep: Creep = this;
-        var needMoreEnergy = true;
+        let creep: Creep = this;
+        let needMoreEnergy = true;
+
+        if (needMoreEnergy && Memory.attackStep < 1) {
+
+            let storages = <Storage[]>creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_STORAGE;
+                }
+            });
+
+            let storage = storages[0];
+
+            if (storage.store.energy > 250) {
+                let withdrawResult = creep.withdraw(storage, RESOURCE_ENERGY);
+
+                if (withdrawResult == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storage);
+                    needMoreEnergy = false;
+                }
+
+                if (withdrawResult == OK)
+                    needMoreEnergy = false;
+            }
+        }
 
         if (needMoreEnergy) {
 
@@ -11,7 +34,7 @@ export function run() {
 
                 // On vérifie qu'il y a encore de l'énergie
                 if (currentRoomContainerId) {
-                    var container = Game.getObjectById<Container>(currentRoomContainerId);
+                    let container = Game.getObjectById<Container>(currentRoomContainerId);
 
                     if (!container || container.store[RESOURCE_ENERGY] < 100) {
                         currentRoomContainerId = null;
@@ -39,12 +62,12 @@ export function run() {
 
             if (Memory.turnGoal[creep.room.name].energyContainerTargetId) {
 
-                var container = Game.getObjectById<Container>(Memory.turnGoal[creep.room.name].energyContainerTargetId);
+                let container = Game.getObjectById<Container>(Memory.turnGoal[creep.room.name].energyContainerTargetId);
 
                 if (!container) {
                     Memory.roomGoal[creep.room.name].energyContainerTargetId = null;
                 } else {
-                    var withdrawResult = creep.withdraw(container, RESOURCE_ENERGY);
+                    let withdrawResult = creep.withdraw(container, RESOURCE_ENERGY);
 
                     if (withdrawResult == ERR_NOT_IN_RANGE) {
                         creep.moveTo(container);
@@ -58,10 +81,10 @@ export function run() {
         }
 
         if (needMoreEnergy) {
-            var droppedSources = creep.room.find<Resource>(FIND_DROPPED_ENERGY).sort((i, j) => { return j.amount - i.amount });
+            let droppedSources = creep.room.find<Resource>(FIND_DROPPED_ENERGY).sort((i, j) => { return j.amount - i.amount });
 
             if (droppedSources.length > 0) {
-                var pickResult = creep.pickup(droppedSources[0]);
+                let pickResult = creep.pickup(droppedSources[0]);
                 if (pickResult == ERR_NOT_IN_RANGE) {
                     creep.moveTo(droppedSources[0]);
                     needMoreEnergy = false;
@@ -73,20 +96,20 @@ export function run() {
         }
 
         if (needMoreEnergy) {
-            var energySources = creep.room.find<Source>(FIND_SOURCES);//sources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-            var targetSource = energySources[0];
+            let energySources = creep.room.find<Source>(FIND_SOURCES);//sources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+            let targetSource = energySources[0];
             //targetSource = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-            var harvestResult = creep.harvest(targetSource);
+            let harvestResult = creep.harvest(targetSource);
             //console.log("harvest" + harvestResult);
             if (harvestResult == ERR_NOT_IN_RANGE) {
-                var moveResult = creep.moveTo(targetSource);
+                let moveResult = creep.moveTo(targetSource);
                 //console.log("move" + moveResult);
             }
         }
     };
 
     Creep.prototype.goToRoomIfNecessary = function () {
-        var creep: Creep = this;
+        let creep: Creep = this;
 
         if (creep.memory.roomName != creep.room.name) {
             creep.moveTo(new RoomPosition(25, 25, creep.memory.roomName));
