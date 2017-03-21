@@ -48,7 +48,7 @@ export function run(creep: Creep) {
         }
 
         if (turnGoal.fillEnergyTargetId) {
-            var fillEnergyTarget = Game.getObjectById<Structure>(turnGoal.fillEnergyTargetId);
+            let fillEnergyTarget = Game.getObjectById<Structure>(turnGoal.fillEnergyTargetId);
 
             if (creep.transfer(fillEnergyTarget, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(fillEnergyTarget);
@@ -124,6 +124,36 @@ export function run(creep: Creep) {
         }
     }
 
+    // On cherche les Storages qui ont besoin d'énergie
+    if (!turnConsumed) {
+        if (turnGoal.fillStorageTargetId === undefined) {
+            let storages = <Storage[]>creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_STORAGE;
+                }
+            });
+
+            if (storages.length > 0) {
+                let storage = storages[0];
+                if (storage.store.energy < getDesiredStorageCapacity(creep.room))
+                    turnGoal.fillStorageTargetId = storage.id;
+                else turnGoal.fillStorageTargetId = null;
+            }
+            else {
+                turnGoal.fillStorageTargetId = null;
+            }
+        }
+
+        if (turnGoal.fillStorageTargetId) {
+            let storageTarget = Game.getObjectById<Storage>(turnGoal.fillStorageTargetId);
+
+            if (creep.transfer(storageTarget, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(storageTarget);
+            }
+            turnConsumed = true;
+        }
+    }
+
     // Sinon on upgrade simplement le controller
     if (!turnConsumed) {
         if (creep.room.controller && creep.room.controller.my) {
@@ -145,6 +175,15 @@ export function getRampartMaxHits(room: Room): number {
             return 300000;
         else if (level < 8)
             return 1000000;
+        else return 1000000;
+    }
+    else
+        return 0;
+}
+
+export function getDesiredStorageCapacity(room: Room): number {
+    if (room.controller && room.controller.my) {
+        return room.energyCapacityAvailable * 3;
     }
     else
         return 0;

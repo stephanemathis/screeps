@@ -38,6 +38,7 @@ interface TurnGoal {
     repairTargetId?: string;
     fillEnergyTargetId?: string;
     energyContainerTargetId?: string;
+    fillStorageTargetId?: string;
 }
 
 interface RoomGoal {

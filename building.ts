@@ -31,7 +31,7 @@ export function createBuildingIfNecessary() {
 export function getNextStructure(room: Room): string {
     var controllerLevel = room.controller.level;
 
-    var structPriority = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_CONTAINER, STRUCTURE_RAMPART];
+    var structPriority = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_CONTAINER, STRUCTURE_RAMPART, STRUCTURE_STORAGE];
 
     for (var i = 0; i < structPriority.length; i++) {
         var struct = structPriority[i];
